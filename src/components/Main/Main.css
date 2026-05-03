@@ -1,0 +1,9 @@
+.main {
+  flex: 1;
+  padding: 1.5rem;
+}
+
+.main__placeholder {
+  text-align: center;
+  color: var(--text);
+}
