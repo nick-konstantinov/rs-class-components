@@ -32,6 +32,7 @@ class Search extends Component<SearchProps, SearchState> {
   handleSubmit = (event: SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
     const trimmed = this.state.value.trim();
+    this.setState({ value: trimmed });
     localStorage.setItem(SEARCH_TERM_STORAGE_KEY, trimmed);
     this.props.onSearch(trimmed);
   };
