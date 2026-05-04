@@ -1,0 +1,10 @@
+.header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+}
+
+.header__title {
+  margin: 0;
+  font-size: 1.75rem;
+}
