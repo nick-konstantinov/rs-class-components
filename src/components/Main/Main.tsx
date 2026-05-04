@@ -1,11 +1,18 @@
 import { Component } from 'react';
 import './Main.css';
 
-class Main extends Component {
+interface MainProps {
+  searchTerm: string;
+}
+
+class Main extends Component<MainProps> {
   render() {
+    const message = this.props.searchTerm
+      ? `Searching for "${this.props.searchTerm}"`
+      : 'Showing all Pokemon';
     return (
       <main className="main">
-        <p className="main__placeholder">Results will appear here</p>
+        <p className="main__placeholder">{message}</p>
       </main>
     );
   }

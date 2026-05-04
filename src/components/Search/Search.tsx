@@ -1,0 +1,50 @@
+import { Component } from 'react';
+import type { ChangeEvent, SyntheticEvent } from 'react';
+import './Search.css';
+import { SEARCH_TERM_STORAGE_KEY } from '../../constants';
+
+interface SearchProps {
+  initialTerm: string;
+  onSearch: (term: string) => void;
+}
+
+interface SearchState {
+  value: string;
+}
+
+class Search extends Component<SearchProps, SearchState> {
+  state: SearchState = {
+    value: this.props.initialTerm,
+  };
+
+  handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    this.setState({ value: event.target.value });
+  };
+
+  handleSubmit = (event: SyntheticEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const trimmed = this.state.value.trim();
+    localStorage.setItem(SEARCH_TERM_STORAGE_KEY, trimmed);
+    this.setState({ value: trimmed });
+    this.props.onSearch(trimmed);
+  };
+
+  render() {
+    return (
+      <form className="search" onSubmit={this.handleSubmit}>
+        <input
+          type="text"
+          className="search__input"
+          placeholder="Search Pokemon by name..."
+          value={this.state.value}
+          onChange={this.handleChange}
+        />
+        <button type="submit" className="search__button">
+          Search
+        </button>
+      </form>
+    );
+  }
+}
+
+export default Search;
