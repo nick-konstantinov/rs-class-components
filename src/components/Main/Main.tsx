@@ -3,6 +3,7 @@ import './Main.css';
 import Loader from '../Loader/Loader.tsx';
 import type { PokemonItem } from '../../types/pokemon.ts';
 import { ApiError, searchPokemon } from '../../api/pokemon.ts';
+import CardList from '../CardList/CardList.tsx';
 
 interface MainProps {
   searchTerm: string;
@@ -81,7 +82,7 @@ class Main extends Component<MainProps, MainState> {
 
     return (
       <main className="main">
-        <p>Found {items.length} Pokemon</p>
+        <CardList items={items} />
       </main>
     );
   }

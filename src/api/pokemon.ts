@@ -31,9 +31,14 @@ async function fetchJson<T>(url: string): Promise<T> {
 function detailToItem(detail: PokemonDetailResponse): PokemonItem {
   const types = detail.types.map((t) => t.type.name).join(', ');
   const abilities = detail.abilities.map((a) => a.ability.name).join(', ');
+
   return {
     name: detail.name,
-    description: `Types: ${types}. Abilities: ${abilities}. Height: ${detail.height}, Weight: ${detail.weight}.`,
+    types,
+    abilities,
+    height: detail.height,
+    weight: detail.weight,
+    sprite: detail.sprites.front_default,
   };
 }
 

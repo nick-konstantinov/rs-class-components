@@ -1,6 +1,10 @@
 export interface PokemonItem {
   name: string;
-  description: string;
+  types: string;
+  abilities: string;
+  height: number;
+  weight: number;
+  sprite: string | null;
 }
 
 export interface PokemonListEntry {
@@ -21,4 +25,5 @@ export interface PokemonDetailResponse {
   weight: number;
   types: { type: { name: string } }[];
   abilities: { ability: { name: string } }[];
+  sprites: { front_default: string | null };
 }
