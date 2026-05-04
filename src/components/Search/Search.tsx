@@ -6,6 +6,7 @@ import { SEARCH_TERM_STORAGE_KEY } from '../../constants';
 interface SearchProps {
   initialTerm: string;
   onSearch: (term: string) => void;
+  onChange?: (term: string) => void;
 }
 
 interface SearchState {
@@ -18,14 +19,20 @@ class Search extends Component<SearchProps, SearchState> {
   };
 
   handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    this.setState({ value: event.target.value });
+    const value = event.target.value;
+    this.setState({ value });
+
+    if (value === '') {
+      localStorage.setItem(SEARCH_TERM_STORAGE_KEY, '');
+
+      this.props.onSearch('');
+    }
   };
 
   handleSubmit = (event: SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
     const trimmed = this.state.value.trim();
     localStorage.setItem(SEARCH_TERM_STORAGE_KEY, trimmed);
-    this.setState({ value: trimmed });
     this.props.onSearch(trimmed);
   };
 

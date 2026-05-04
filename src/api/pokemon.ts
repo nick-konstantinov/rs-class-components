@@ -22,9 +22,11 @@ function getErrorMessage(status: number): string {
 
 async function fetchJson<T>(url: string): Promise<T> {
   const response = await fetch(url);
+
   if (!response.ok) {
     throw new ApiError(response.status, getErrorMessage(response.status));
   }
+
   return (await response.json()) as T;
 }
 
@@ -42,28 +44,35 @@ function detailToItem(detail: PokemonDetailResponse): PokemonItem {
   };
 }
 
-async function fetchPokemonDetail(nameOrId: string): Promise<PokemonItem> {
-  const detail = await fetchJson<PokemonDetailResponse>(`${BASE_URL}/pokemon/${nameOrId}`);
-  return detailToItem(detail);
+export async function getPokemonList(page: number): Promise<PokemonItem[]> {
+  const offset = page * PAGE_SIZE;
+
+  const list = await fetchJson<PokemonListResponse>(
+    `${BASE_URL}/pokemon?limit=${PAGE_SIZE}&offset=${offset}`,
+  );
+
+  return Promise.all(list.results.map((entry) => fetchPokemonDetail(entry.name)));
 }
 
 export async function searchPokemon(term: string): Promise<PokemonItem[]> {
   const trimmed = term.trim().toLowerCase();
 
-  if (trimmed === '') {
-    const list = await fetchJson<PokemonListResponse>(
-      `${BASE_URL}/pokemon?limit=${PAGE_SIZE}&offset=0`,
-    );
-    return Promise.all(list.results.map((entry) => fetchPokemonDetail(entry.name)));
-  }
+  if (!trimmed) return [];
 
   try {
-    const item = await fetchPokemonDetail(trimmed);
-    return [item];
+    const detail = await fetchJson<PokemonDetailResponse>(`${BASE_URL}/pokemon/${trimmed}`);
+
+    return [detailToItem(detail)];
   } catch (err) {
     if (err instanceof ApiError && err.status === 404) {
       return [];
     }
     throw err;
   }
+}
+
+async function fetchPokemonDetail(nameOrId: string): Promise<PokemonItem> {
+  const detail = await fetchJson<PokemonDetailResponse>(`${BASE_URL}/pokemon/${nameOrId}`);
+
+  return detailToItem(detail);
 }
