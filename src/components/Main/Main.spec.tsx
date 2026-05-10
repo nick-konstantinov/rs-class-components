@@ -27,7 +27,7 @@ describe('Main', () => {
     expect(screen.getByRole('status', { name: 'Loading' })).toBeInTheDocument();
     expect(await screen.findByRole('heading', { name: 'pokemon-1' })).toBeInTheDocument();
     expect(screen.getAllByRole('heading')).toHaveLength(3);
-    expect(mockedGetPokemonList).toHaveBeenCalled();
+    expect(mockedGetPokemonList).toHaveBeenCalledWith(0);
   });
 
   it('searches when searchTerm is provided on mount', async () => {
@@ -107,6 +107,7 @@ describe('Main', () => {
 
   it('triggers an error caught by ErrorBoundary when "Throw test error" is clicked', async () => {
     const user = userEvent.setup();
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     mockedGetPokemonList.mockResolvedValueOnce(makePokemonList(1));
 
     render(
@@ -118,6 +119,7 @@ describe('Main', () => {
     await screen.findByRole('heading', { name: 'pokemon-1' });
     await user.click(screen.getByRole('button', { name: 'Throw test error' }));
 
-    expect(screen.getByText('Something went wrong')).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Something went wrong' })).toBeInTheDocument();
+    errorSpy.mockRestore();
   });
 });
