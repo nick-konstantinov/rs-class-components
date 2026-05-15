@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router-dom';
 import App from './App';
 import { SEARCH_TERM_STORAGE_KEY } from './constants';
 import { getPokemonList, searchPokemon } from './api/pokemon';
@@ -13,6 +14,13 @@ vi.mock('./api/pokemon', () => ({
 const mockedGetPokemonList = vi.mocked(getPokemonList);
 const mockedSearchPokemon = vi.mocked(searchPokemon);
 
+const renderApp = (initialPath = '/') =>
+  render(<App />, {
+    wrapper: ({ children }) => (
+      <MemoryRouter initialEntries={[initialPath]}>{children}</MemoryRouter>
+    ),
+  });
+
 describe('App', () => {
   beforeEach(() => {
     mockedGetPokemonList.mockReset();
@@ -23,7 +31,7 @@ describe('App', () => {
     localStorage.setItem(SEARCH_TERM_STORAGE_KEY, 'charizard');
     mockedSearchPokemon.mockResolvedValueOnce([makePokemon({ name: 'charizard' })]);
 
-    render(<App />);
+    renderApp();
 
     expect(screen.getByRole('textbox')).toHaveValue('charizard');
     expect(await screen.findByRole('heading', { name: 'charizard' })).toBeInTheDocument();
@@ -33,7 +41,7 @@ describe('App', () => {
   it('falls back to the default list when localStorage is empty', async () => {
     mockedGetPokemonList.mockResolvedValueOnce(makePokemonList(2));
 
-    render(<App />);
+    renderApp();
 
     expect(screen.getByRole('textbox')).toHaveValue('');
     expect(await screen.findByRole('heading', { name: 'pokemon-1' })).toBeInTheDocument();
@@ -46,7 +54,7 @@ describe('App', () => {
     mockedGetPokemonList.mockResolvedValueOnce(makePokemonList(2));
     mockedSearchPokemon.mockResolvedValueOnce([makePokemon({ name: 'mewtwo' })]);
 
-    render(<App />);
+    renderApp();
 
     await screen.findByRole('heading', { name: 'pokemon-1' });
     await user.type(screen.getByRole('textbox'), 'mewtwo{Enter}');
@@ -61,7 +69,7 @@ describe('App', () => {
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     mockedGetPokemonList.mockResolvedValueOnce(makePokemonList(1));
 
-    render(<App />);
+    renderApp();
 
     await screen.findByRole('heading', { name: 'pokemon-1' });
     await user.click(screen.getByRole('button', { name: 'Throw test error' }));
@@ -70,5 +78,17 @@ describe('App', () => {
     expect(screen.getByRole('textbox')).toBeInTheDocument();
 
     errorSpy.mockRestore();
+  });
+
+  it('renders the About page on the /about route', () => {
+    renderApp('/about');
+
+    expect(screen.getByRole('heading', { name: 'About' })).toBeInTheDocument();
+  });
+
+  it('renders the NotFound page on an unknown route', () => {
+    renderApp('/this-route-does-not-exist');
+
+    expect(screen.getByRole('heading', { name: /not found/i })).toBeInTheDocument();
   });
 });
