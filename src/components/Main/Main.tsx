@@ -14,7 +14,7 @@ function Main({ searchTerm }: MainProps) {
   const [loading, setLoading] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [page, setPage] = useState(0);
+  const [page, setPage] = useState(1);
   const [crash, setCrash] = useState(false);
 
   const trimmed = searchTerm.trim();
@@ -22,7 +22,7 @@ function Main({ searchTerm }: MainProps) {
 
   if (prevTrimmed !== trimmed) {
     setPrevTrimmed(trimmed);
-    setPage(0);
+    setPage(1);
   }
 
   useEffect(() => {
@@ -31,18 +31,14 @@ function Main({ searchTerm }: MainProps) {
     const run = async () => {
       try {
         setError(null);
-        setLoading(page === 0);
-        setLoadingMore(page > 0);
+        setLoading(page === 1);
+        setLoadingMore(page > 1);
 
-        if (trimmed) {
-          const results = await searchPokemon(trimmed);
-          if (cancelled) return;
-          setItems(results);
-        } else {
-          const fetched = await getPokemonList(page);
-          if (cancelled) return;
-          setItems((prev) => (page === 0 ? fetched : [...prev, ...fetched]));
-        }
+        const result = trimmed ? await searchPokemon(trimmed) : await getPokemonList(page);
+
+        if (cancelled) return;
+
+        setItems((prev) => (page === 1 ? result.items : [...prev, ...result.items]));
       } catch (err) {
         if (cancelled) return;
         setError(err instanceof Error ? err.message : 'Unknown error');

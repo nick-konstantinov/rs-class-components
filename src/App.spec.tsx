@@ -29,7 +29,10 @@ describe('App', () => {
 
   it('reads the saved search term from localStorage and uses it for the initial search', async () => {
     localStorage.setItem(SEARCH_TERM_STORAGE_KEY, JSON.stringify('charizard'));
-    mockedSearchPokemon.mockResolvedValueOnce([makePokemon({ name: 'charizard' })]);
+    mockedSearchPokemon.mockResolvedValueOnce({
+      items: [makePokemon({ name: 'charizard' })],
+      totalCount: 1,
+    });
 
     renderApp();
 
@@ -39,20 +42,29 @@ describe('App', () => {
   });
 
   it('falls back to the default list when localStorage is empty', async () => {
-    mockedGetPokemonList.mockResolvedValueOnce(makePokemonList(2));
+    mockedGetPokemonList.mockResolvedValueOnce({
+      items: makePokemonList(2),
+      totalCount: 40,
+    });
 
     renderApp();
 
     expect(screen.getByRole('textbox')).toHaveValue('');
     expect(await screen.findByRole('heading', { name: 'pokemon-1' })).toBeInTheDocument();
-    expect(mockedGetPokemonList).toHaveBeenCalledWith(0);
+    expect(mockedGetPokemonList).toHaveBeenCalledWith(1);
   });
 
   it('persists and triggers a new search when the user submits the form', async () => {
     const user = userEvent.setup();
 
-    mockedGetPokemonList.mockResolvedValueOnce(makePokemonList(2));
-    mockedSearchPokemon.mockResolvedValueOnce([makePokemon({ name: 'mewtwo' })]);
+    mockedGetPokemonList.mockResolvedValueOnce({
+      items: makePokemonList(2),
+      totalCount: 40,
+    });
+    mockedSearchPokemon.mockResolvedValueOnce({
+      items: [makePokemon({ name: 'mewtwo' })],
+      totalCount: 1,
+    });
 
     renderApp();
 
@@ -67,7 +79,10 @@ describe('App', () => {
   it('shows the ErrorBoundary fallback when Main crashes, while keeping Header alive', async () => {
     const user = userEvent.setup();
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    mockedGetPokemonList.mockResolvedValueOnce(makePokemonList(1));
+    mockedGetPokemonList.mockResolvedValueOnce({
+      items: makePokemonList(1),
+      totalCount: 20,
+    });
 
     renderApp();
 
