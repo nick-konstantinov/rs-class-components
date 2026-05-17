@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { MemoryRouter } from 'react-router-dom';
 import Main from './Main';
 import ErrorBoundary from '../ErrorBoundary/ErrorBoundary';
 import { getPokemonList, searchPokemon } from '../../api/pokemon';
@@ -13,6 +14,13 @@ vi.mock('../../api/pokemon', () => ({
 const mockedGetPokemonList = vi.mocked(getPokemonList);
 const mockedSearchPokemon = vi.mocked(searchPokemon);
 
+const renderMain = (props: { searchTerm?: string; initialPath?: string } = {}) =>
+  render(<Main searchTerm={props.searchTerm ?? ''} />, {
+    wrapper: ({ children }) => (
+      <MemoryRouter initialEntries={[props.initialPath ?? '/']}>{children}</MemoryRouter>
+    ),
+  });
+
 describe('Main', () => {
   beforeEach(() => {
     mockedGetPokemonList.mockReset();
@@ -25,12 +33,25 @@ describe('Main', () => {
       totalCount: 60,
     });
 
-    render(<Main searchTerm="" />);
+    renderMain();
 
     expect(screen.getByRole('status', { name: 'Loading' })).toBeInTheDocument();
     expect(await screen.findByRole('heading', { name: 'pokemon-1' })).toBeInTheDocument();
     expect(screen.getAllByRole('heading')).toHaveLength(3);
     expect(mockedGetPokemonList).toHaveBeenCalledWith(1);
+  });
+
+  it('reads page from URL and fetches that page', async () => {
+    mockedGetPokemonList.mockResolvedValueOnce({
+      items: makePokemonList(3),
+      totalCount: 60,
+    });
+
+    renderMain({ initialPath: '/?page=3' });
+
+    await screen.findByRole('heading', { name: 'pokemon-1' });
+
+    expect(mockedGetPokemonList).toHaveBeenCalledWith(3);
   });
 
   it('searches when searchTerm is provided on mount', async () => {
@@ -39,7 +60,7 @@ describe('Main', () => {
       totalCount: 1,
     });
 
-    render(<Main searchTerm="charizard" />);
+    renderMain({ searchTerm: 'charizard' });
 
     expect(await screen.findByRole('heading', { name: 'charizard' })).toBeInTheDocument();
     expect(mockedSearchPokemon).toHaveBeenCalledWith('charizard');
@@ -49,7 +70,7 @@ describe('Main', () => {
   it('shows "No Pokemon available" when list is empty without search term', async () => {
     mockedGetPokemonList.mockResolvedValueOnce({ items: [], totalCount: 0 });
 
-    render(<Main searchTerm="" />);
+    renderMain();
 
     expect(await screen.findByText('No Pokemon available')).toBeInTheDocument();
   });
@@ -57,7 +78,7 @@ describe('Main', () => {
   it('shows "No Pokemon found" when search yields no results', async () => {
     mockedSearchPokemon.mockResolvedValueOnce({ items: [], totalCount: 0 });
 
-    render(<Main searchTerm="missingno" />);
+    renderMain({ searchTerm: 'missingno' });
 
     expect(await screen.findByText('No Pokemon found')).toBeInTheDocument();
   });
@@ -65,41 +86,40 @@ describe('Main', () => {
   it('shows the API error message', async () => {
     mockedGetPokemonList.mockRejectedValueOnce(new Error('Server is unavailable'));
 
-    render(<Main searchTerm="" />);
+    renderMain();
 
     expect(await screen.findByText('Server is unavailable')).toBeInTheDocument();
   });
 
-  it('appends the next page when "Load more" is clicked', async () => {
+  it('renders Pagination once items are loaded', async () => {
+    mockedGetPokemonList.mockResolvedValueOnce({
+      items: makePokemonList(3),
+      totalCount: 60,
+    });
+
+    renderMain();
+
+    await screen.findByRole('heading', { name: 'pokemon-1' });
+
+    expect(screen.getByRole('navigation', { name: 'Pagination' })).toBeInTheDocument();
+  });
+
+  it('refetches and reflects the URL when a page button is clicked', async () => {
     const user = userEvent.setup();
     mockedGetPokemonList
       .mockResolvedValueOnce({ items: makePokemonList(3), totalCount: 60 })
       .mockResolvedValueOnce({
-        items: [makePokemon({ name: 'page2-1' }), makePokemon({ name: 'page2-2' })],
+        items: [makePokemon({ name: 'page2-1' })],
         totalCount: 60,
       });
 
-    render(<Main searchTerm="" />);
+    renderMain();
 
     await screen.findByRole('heading', { name: 'pokemon-1' });
-    await user.click(screen.getByRole('button', { name: 'Load more' }));
+    await user.click(screen.getByRole('button', { name: '2' }));
 
     expect(await screen.findByRole('heading', { name: 'page2-1' })).toBeInTheDocument();
-    expect(screen.getAllByRole('heading')).toHaveLength(5);
     expect(mockedGetPokemonList).toHaveBeenNthCalledWith(2, 2);
-  });
-
-  it('does not show "Load more" when there is a search term', async () => {
-    mockedSearchPokemon.mockResolvedValueOnce({
-      items: [makePokemon()],
-      totalCount: 1,
-    });
-
-    render(<Main searchTerm="pikachu" />);
-
-    await screen.findByRole('heading', { name: 'pikachu' });
-
-    expect(screen.queryByRole('button', { name: 'Load more' })).not.toBeInTheDocument();
   });
 
   it('refetches when searchTerm prop changes', async () => {
@@ -112,7 +132,7 @@ describe('Main', () => {
       totalCount: 1,
     });
 
-    const { rerender } = render(<Main searchTerm="" />);
+    const { rerender } = renderMain();
 
     await screen.findByRole('heading', { name: 'pokemon-1' });
 
@@ -132,9 +152,11 @@ describe('Main', () => {
     });
 
     render(
-      <ErrorBoundary>
-        <Main searchTerm="" />
-      </ErrorBoundary>,
+      <MemoryRouter>
+        <ErrorBoundary>
+          <Main searchTerm="" />
+        </ErrorBoundary>
+      </MemoryRouter>,
     );
 
     await screen.findByRole('heading', { name: 'pokemon-1' });
