@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useEffect, useState } from 'react';
 import './Main.css';
 import Loader from '../Loader/Loader';
 import CardList from '../CardList/CardList';
@@ -9,140 +9,93 @@ interface MainProps {
   searchTerm: string;
 }
 
-interface MainState {
-  items: PokemonItem[];
-  loading: boolean;
-  loadingMore: boolean;
-  error: string | null;
-  page: number;
-  crash: boolean;
-}
+function Main({ searchTerm }: MainProps) {
+  const [items, setItems] = useState<PokemonItem[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState(0);
+  const [crash, setCrash] = useState(false);
 
-class Main extends Component<MainProps, MainState> {
-  state: MainState = {
-    items: [],
-    loading: false,
-    loadingMore: false,
-    error: null,
-    page: 0,
-    crash: false,
-  };
+  const trimmed = searchTerm.trim();
+  const [prevTrimmed, setPrevTrimmed] = useState(trimmed);
 
-  componentDidMount() {
-    void this.fetchData(0);
+  if (prevTrimmed !== trimmed) {
+    setPrevTrimmed(trimmed);
+    setPage(0);
   }
 
-  componentDidUpdate(prevProps: MainProps, prevState: MainState) {
-    const prev = prevProps.searchTerm.trim();
-    const current = this.props.searchTerm.trim();
+  useEffect(() => {
+    let cancelled = false;
 
-    if (prev !== current) {
-      this.setState(
-        {
-          page: 0,
-          items: [],
-        },
-        () => {
-          void this.fetchData(0);
-        },
-      );
-      return;
-    }
+    const run = async () => {
+      try {
+        setError(null);
+        setLoading(page === 0);
+        setLoadingMore(page > 0);
 
-    if (prevState.page !== this.state.page && !current) {
-      void this.fetchData(this.state.page);
-    }
-  }
-
-  fetchData = async (page: number = 0) => {
-    try {
-      const isSearch = this.props.searchTerm.trim();
-
-      this.setState({
-        error: null,
-        loading: page === 0,
-        loadingMore: page > 0,
-      });
-
-      let items: PokemonItem[];
-
-      if (isSearch) {
-        items = await searchPokemon(this.props.searchTerm);
-
-        this.setState({
-          items,
-          loading: false,
-          loadingMore: false,
-        });
-
-        return;
+        if (trimmed) {
+          const results = await searchPokemon(trimmed);
+          if (cancelled) return;
+          setItems(results);
+        } else {
+          const fetched = await getPokemonList(page);
+          if (cancelled) return;
+          setItems((prev) => (page === 0 ? fetched : [...prev, ...fetched]));
+        }
+      } catch (err) {
+        if (cancelled) return;
+        setError(err instanceof Error ? err.message : 'Unknown error');
+      } finally {
+        if (!cancelled) {
+          setLoading(false);
+          setLoadingMore(false);
+        }
       }
+    };
 
-      const newItems = await getPokemonList(page);
+    void run();
 
-      this.setState((prev) => ({
-        items: page === 0 ? newItems : [...prev.items, ...newItems],
-        loading: false,
-        loadingMore: false,
-      }));
-    } catch (err) {
-      this.setState({
-        error: err instanceof Error ? err.message : 'Unknown error',
-        loading: false,
-        loadingMore: false,
-      });
-    }
-  };
+    return () => {
+      cancelled = true;
+    };
+  }, [trimmed, page]);
 
-  loadNextPage = () => {
-    if (this.props.searchTerm.trim()) return;
+  if (crash) {
+    throw new Error('Test error');
+  }
 
-    this.setState((prev) => ({
-      page: prev.page + 1,
-    }));
-  };
+  const isEmpty = !loading && items.length === 0;
 
-  render() {
-    const { items, loading, loadingMore, error } = this.state;
-    const isSearch = this.props.searchTerm.trim();
-    const isEmpty = !loading && items.length === 0;
+  return (
+    <main className="main">
+      {error && <p className="main__error">{error}</p>}
 
-    if (this.state.crash) {
-      throw new Error('Test error');
-    }
+      {loading && <Loader />}
 
-    return (
-      <main className="main">
-        {error && <p className="main__error">{error}</p>}
+      {!loading && !error && isEmpty && (
+        <p className="main__placeholder">{trimmed ? 'No Pokemon found' : 'No Pokemon available'}</p>
+      )}
 
-        {loading && <Loader />}
+      {!loading && items.length > 0 && <CardList items={items} />}
 
-        {!loading && !error && isEmpty && (
-          <p className="main__placeholder">
-            {isSearch ? 'No Pokemon found' : 'No Pokemon available'}
-          </p>
+      {loadingMore && <Loader />}
+
+      <div className="main__controls">
+        {!trimmed && !loading && items.length > 0 && (
+          <button onClick={() => setPage((p) => p + 1)} className="main__load-more">
+            Load more
+          </button>
         )}
 
-        {!loading && items.length > 0 && <CardList items={items} />}
-
-        {loadingMore && <Loader />}
-
-        <div className="main__controls">
-          {!isSearch && !loading && items.length > 0 && (
-            <button onClick={this.loadNextPage} className="main__load-more">
-              Load more
-            </button>
-          )}
-
-          {!loading && !loadingMore && (
-            <button onClick={() => this.setState({ crash: true })} className="main__error-btn">
-              Throw test error
-            </button>
-          )}
-        </div>
-      </main>
-    );
-  }
+        {!loading && !loadingMore && (
+          <button onClick={() => setCrash(true)} className="main__error-btn">
+            Throw test error
+          </button>
+        )}
+      </div>
+    </main>
+  );
 }
 
 export default Main;
