@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { useState } from 'react';
 import type { ChangeEvent, SyntheticEvent } from 'react';
 import './Search.css';
 import { SEARCH_TERM_STORAGE_KEY } from '../../constants';
@@ -9,50 +9,41 @@ interface SearchProps {
   onChange?: (term: string) => void;
 }
 
-interface SearchState {
-  value: string;
-}
+function Search({ initialTerm, onSearch }: SearchProps) {
+  const [value, setValue] = useState(initialTerm);
 
-class Search extends Component<SearchProps, SearchState> {
-  state: SearchState = {
-    value: this.props.initialTerm,
-  };
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const next = event.target.value;
+    setValue(next);
 
-  handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const value = event.target.value;
-    this.setState({ value });
-
-    if (value === '') {
+    if (next === '') {
       localStorage.setItem(SEARCH_TERM_STORAGE_KEY, '');
-
-      this.props.onSearch('');
+      onSearch('');
     }
   };
 
-  handleSubmit = (event: SyntheticEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const trimmed = this.state.value.trim();
-    this.setState({ value: trimmed });
+    const trimmed = value.trim();
+    setValue(trimmed);
     localStorage.setItem(SEARCH_TERM_STORAGE_KEY, trimmed);
-    this.props.onSearch(trimmed);
+    onSearch(trimmed);
   };
 
-  render() {
-    return (
-      <form className="search" onSubmit={this.handleSubmit}>
-        <input
-          type="text"
-          className="search__input"
-          placeholder="Search Pokemon by name..."
-          value={this.state.value}
-          onChange={this.handleChange}
-        />
-        <button type="submit" className="search__button">
-          Search
-        </button>
-      </form>
-    );
-  }
+  return (
+    <form className="search" onSubmit={handleSubmit}>
+      <input
+        type="text"
+        className="search__input"
+        placeholder="Search Pokemon by name..."
+        value={value}
+        onChange={handleChange}
+      />
+      <button type="submit" className="search__button">
+        Search
+      </button>
+    </form>
+  );
 }
 
 export default Search;
