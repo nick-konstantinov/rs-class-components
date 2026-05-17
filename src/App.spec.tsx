@@ -28,7 +28,7 @@ describe('App', () => {
   });
 
   it('reads the saved search term from localStorage and uses it for the initial search', async () => {
-    localStorage.setItem(SEARCH_TERM_STORAGE_KEY, 'charizard');
+    localStorage.setItem(SEARCH_TERM_STORAGE_KEY, JSON.stringify('charizard'));
     mockedSearchPokemon.mockResolvedValueOnce([makePokemon({ name: 'charizard' })]);
 
     renderApp();
@@ -59,7 +59,7 @@ describe('App', () => {
     await screen.findByRole('heading', { name: 'pokemon-1' });
     await user.type(screen.getByRole('textbox'), 'mewtwo{Enter}');
 
-    expect(localStorage.getItem(SEARCH_TERM_STORAGE_KEY)).toBe('mewtwo');
+    expect(localStorage.getItem(SEARCH_TERM_STORAGE_KEY)).toBe(JSON.stringify('mewtwo'));
     expect(await screen.findByRole('heading', { name: 'mewtwo' })).toBeInTheDocument();
     expect(mockedSearchPokemon).toHaveBeenCalledWith('mewtwo');
   });

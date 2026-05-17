@@ -1,12 +1,10 @@
 import { useState } from 'react';
 import type { ChangeEvent, SyntheticEvent } from 'react';
 import './Search.css';
-import { SEARCH_TERM_STORAGE_KEY } from '../../constants';
 
 interface SearchProps {
   initialTerm: string;
   onSearch: (term: string) => void;
-  onChange?: (term: string) => void;
 }
 
 function Search({ initialTerm, onSearch }: SearchProps) {
@@ -17,7 +15,6 @@ function Search({ initialTerm, onSearch }: SearchProps) {
     setValue(next);
 
     if (next === '') {
-      localStorage.setItem(SEARCH_TERM_STORAGE_KEY, '');
       onSearch('');
     }
   };
@@ -26,7 +23,6 @@ function Search({ initialTerm, onSearch }: SearchProps) {
     event.preventDefault();
     const trimmed = value.trim();
     setValue(trimmed);
-    localStorage.setItem(SEARCH_TERM_STORAGE_KEY, trimmed);
     onSearch(trimmed);
   };
 

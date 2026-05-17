@@ -5,10 +5,9 @@ import { NavLink } from 'react-router-dom';
 interface HeaderProps {
   initialTerm: string;
   onSearch: (term: string) => void;
-  onChange: (term: string) => void;
 }
 
-function Header({ initialTerm, onSearch, onChange }: HeaderProps) {
+function Header({ initialTerm, onSearch }: HeaderProps) {
   return (
     <header className="header">
       <h1 className="header__title">Pokemon Search</h1>
@@ -20,7 +19,7 @@ function Header({ initialTerm, onSearch, onChange }: HeaderProps) {
           About
         </NavLink>
       </nav>
-      <Search initialTerm={initialTerm} onSearch={onSearch} onChange={onChange} />
+      <Search initialTerm={initialTerm} onSearch={onSearch} />
     </header>
   );
 }
