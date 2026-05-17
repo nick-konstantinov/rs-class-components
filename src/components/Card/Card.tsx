@@ -1,4 +1,5 @@
 import './Card.css';
+import placeholderSprite from '../../assets/pokemon-placeholder.svg';
 import type { PokemonItem } from '../../types/pokemon';
 
 interface CardProps {
@@ -8,7 +9,7 @@ interface CardProps {
 function Card({ item }: CardProps) {
   return (
     <div className="card">
-      {item.sprite && <img src={item.sprite} alt={item.name} className="card__image" />}
+      <img src={item.sprite ?? placeholderSprite} alt={item.name} className="card__image" />
 
       <h3 className="card__title">{item.name}</h3>
 

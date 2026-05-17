@@ -20,9 +20,11 @@ describe('Card', () => {
     expect(image).toHaveAttribute('src', 'https://example.test/pikachu.png');
   });
 
-  it('does not render an image when sprite is null', () => {
+  it('falls back to the placeholder image when sprite is null', () => {
     render(<Card item={makePokemon({ sprite: null })} />);
 
-    expect(screen.queryByRole('img')).not.toBeInTheDocument();
+    const image = screen.getByRole('img', { name: 'pikachu' });
+    expect(image).toBeInTheDocument();
+    expect(image.getAttribute('src')).toBeTruthy();
   });
 });
