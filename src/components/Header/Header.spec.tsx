@@ -7,22 +7,14 @@ const renderHeader = (
   props: {
     initialTerm?: string;
     onSearch?: (t: string) => void;
-    onChange?: (t: string) => void;
   } = {},
   initialPath = '/',
 ) =>
-  render(
-    <Header
-      initialTerm={props.initialTerm ?? ''}
-      onSearch={props.onSearch ?? (() => {})}
-      onChange={props.onChange ?? (() => {})}
-    />,
-    {
-      wrapper: ({ children }) => (
-        <MemoryRouter initialEntries={[initialPath]}>{children}</MemoryRouter>
-      ),
-    },
-  );
+  render(<Header initialTerm={props.initialTerm ?? ''} onSearch={props.onSearch ?? (() => {})} />, {
+    wrapper: ({ children }) => (
+      <MemoryRouter initialEntries={[initialPath]}>{children}</MemoryRouter>
+    ),
+  });
 
 describe('Header', () => {
   it('renders the title and a search input pre-filled with initialTerm', () => {
