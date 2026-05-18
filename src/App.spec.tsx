@@ -104,6 +104,7 @@ describe('App', () => {
   it('renders the NotFound page on an unknown route', () => {
     renderApp('/this-route-does-not-exist');
 
-    expect(screen.getByRole('heading', { name: /not found/i })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: '404', level: 2 })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Back home' })).toBeInTheDocument();
   });
 });
