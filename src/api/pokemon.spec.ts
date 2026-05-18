@@ -1,5 +1,5 @@
 import { type MockInstance } from 'vitest';
-import { ApiError, getPokemonList, searchPokemon } from './pokemon';
+import { ApiError, fetchPokemonDetail, getPokemonList, searchPokemon } from './pokemon';
 import {
   makeDetailResponse,
   makeErrorResponse,
@@ -103,6 +103,24 @@ describe('api/pokemon', () => {
       fetchSpy.mockResolvedValueOnce(makeErrorResponse(500));
 
       await expect(searchPokemon('pikachu')).rejects.toThrow('Server is unavailable');
+    });
+  });
+
+  describe('fetchPokemonDetail', () => {
+    it('fetches the detail and maps it to a PokemonItem', async () => {
+      fetchSpy.mockResolvedValueOnce(makeFetchResponse(makeDetailResponse({ name: 'bulbasaur' })));
+
+      const item = await fetchPokemonDetail('bulbasaur');
+
+      expect(item.name).toBe('bulbasaur');
+      expect(item.types).toBe('electric');
+      expect(fetchSpy).toHaveBeenCalledWith(expect.stringContaining('/pokemon/bulbasaur'));
+    });
+
+    it('throws ApiError on 404', async () => {
+      fetchSpy.mockResolvedValueOnce(makeErrorResponse(404));
+
+      await expect(fetchPokemonDetail('missingno')).rejects.toThrow('Not found');
     });
   });
 

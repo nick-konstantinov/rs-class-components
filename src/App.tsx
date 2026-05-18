@@ -7,6 +7,7 @@ import About from './pages/About/About';
 import NotFound from './pages/NotFound/NotFound';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { SEARCH_TERM_STORAGE_KEY } from './constants';
+import DetailsOutletSlot from './components/Details/DetailsOutletSlot';
 
 function App() {
   const [searchTerm, setSearchTerm] = useLocalStorage<string>(SEARCH_TERM_STORAGE_KEY, '');
@@ -17,7 +18,9 @@ function App() {
 
       <ErrorBoundary>
         <Routes>
-          <Route path="/" element={<Main searchTerm={searchTerm} />} />
+          <Route path="/" element={<Main searchTerm={searchTerm} />}>
+            <Route index element={<DetailsOutletSlot />} />
+          </Route>
           <Route path="/about" element={<About />} />
           <Route path="*" element={<NotFound />} />
         </Routes>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import type { MouseEvent } from 'react';
+import { Outlet, useSearchParams } from 'react-router-dom';
 import './Main.css';
 import Loader from '../Loader/Loader';
 import CardList from '../CardList/CardList';
@@ -36,6 +37,8 @@ function Main({ searchTerm }: MainProps) {
       setSearchParams({ page: '1' }, { replace: true });
     }
   }
+
+  const selectedName = searchParams.get('details');
 
   useEffect(() => {
     let cancelled = false;
@@ -77,30 +80,55 @@ function Main({ searchTerm }: MainProps) {
     setSearchParams({ page: String(next) });
   };
 
+  const handleSelectCard = (name: string) => {
+    setSearchParams({ page: String(page), details: name });
+  };
+
+  const handleBackgroundClick = (event: MouseEvent<HTMLElement>) => {
+    if (event.target !== event.currentTarget) return;
+    if (!selectedName) return;
+
+    const next = new URLSearchParams(searchParams);
+    next.delete('details');
+    setSearchParams(next, { replace: true });
+  };
+
+  const className = selectedName ? 'main main--split' : 'main';
+
   return (
-    <main className="main">
-      {error && <p className="main__error">{error}</p>}
+    <main className={className} onClick={handleBackgroundClick}>
+      <div className="main__list">
+        {error && <p className="main__error">{error}</p>}
 
-      {loading && <Loader />}
+        {loading && <Loader />}
 
-      {!loading && !error && isEmpty && (
-        <p className="main__placeholder">{trimmed ? 'No Pokemon found' : 'No Pokemon available'}</p>
-      )}
-
-      {!loading && items.length > 0 && (
-        <>
-          <CardList items={items} />
-          <Pagination currentPage={page} totalPages={totalPages} onPageChange={handlePageChange} />
-        </>
-      )}
-
-      <div className="main__controls">
-        {!loading && (
-          <button onClick={() => setCrash(true)} className="main__error-btn">
-            Throw test error
-          </button>
+        {!loading && !error && isEmpty && (
+          <p className="main__placeholder">
+            {trimmed ? 'No Pokemon found' : 'No Pokemon available'}
+          </p>
         )}
+
+        {!loading && items.length > 0 && (
+          <>
+            <CardList items={items} onSelectCard={handleSelectCard} selectedName={selectedName} />
+            <Pagination
+              currentPage={page}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          </>
+        )}
+
+        <div className="main__controls">
+          {!loading && (
+            <button onClick={() => setCrash(true)} className="main__error-btn">
+              Throw test error
+            </button>
+          )}
+        </div>
       </div>
+
+      <Outlet />
     </main>
   );
 }

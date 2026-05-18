@@ -79,7 +79,7 @@ export async function searchPokemon(term: string): Promise<PokemonPage> {
   }
 }
 
-async function fetchPokemonDetail(nameOrId: string): Promise<PokemonItem> {
+export async function fetchPokemonDetail(nameOrId: string): Promise<PokemonItem> {
   const detail = await fetchJson<PokemonDetailResponse>(`${BASE_URL}/pokemon/${nameOrId}`);
 
   return detailToItem(detail);

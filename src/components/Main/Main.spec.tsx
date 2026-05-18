@@ -1,18 +1,21 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import Main from './Main';
+import DetailsOutletSlot from '../Details/DetailsOutletSlot';
 import ErrorBoundary from '../ErrorBoundary/ErrorBoundary';
-import { getPokemonList, searchPokemon } from '../../api/pokemon';
+import { fetchPokemonDetail, getPokemonList, searchPokemon } from '../../api/pokemon';
 import { makePokemon, makePokemonList } from '../../test-utils/mockPokemon';
 
 vi.mock('../../api/pokemon', () => ({
   getPokemonList: vi.fn(),
   searchPokemon: vi.fn(),
+  fetchPokemonDetail: vi.fn(),
 }));
 
 const mockedGetPokemonList = vi.mocked(getPokemonList);
 const mockedSearchPokemon = vi.mocked(searchPokemon);
+const mockedFetchPokemonDetail = vi.mocked(fetchPokemonDetail);
 
 const renderMain = (props: { searchTerm?: string; initialPath?: string } = {}) =>
   render(<Main searchTerm={props.searchTerm ?? ''} />, {
@@ -21,10 +24,22 @@ const renderMain = (props: { searchTerm?: string; initialPath?: string } = {}) =
     ),
   });
 
+const renderMainWithRoutes = (props: { searchTerm?: string; initialPath?: string } = {}) =>
+  render(
+    <MemoryRouter initialEntries={[props.initialPath ?? '/']}>
+      <Routes>
+        <Route path="/" element={<Main searchTerm={props.searchTerm ?? ''} />}>
+          <Route index element={<DetailsOutletSlot />} />
+        </Route>
+      </Routes>
+    </MemoryRouter>,
+  );
+
 describe('Main', () => {
   beforeEach(() => {
     mockedGetPokemonList.mockReset();
     mockedSearchPokemon.mockReset();
+    mockedFetchPokemonDetail.mockReset();
   });
 
   it('shows loader on mount and renders the fetched pokemon list', async () => {
@@ -141,6 +156,57 @@ describe('Main', () => {
     expect(await screen.findByRole('heading', { name: 'mewtwo' })).toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'pokemon-1' })).not.toBeInTheDocument();
     expect(mockedSearchPokemon).toHaveBeenCalledWith('mewtwo');
+  });
+
+  it('opens the details panel when a card is clicked', async () => {
+    const user = userEvent.setup();
+    mockedGetPokemonList.mockResolvedValueOnce({
+      items: makePokemonList(2),
+      totalCount: 40,
+    });
+    mockedFetchPokemonDetail.mockResolvedValueOnce(makePokemon({ name: 'pokemon-1' }));
+
+    renderMainWithRoutes();
+
+    await screen.findByRole('heading', { level: 3, name: 'pokemon-1' });
+    await user.click(screen.getByRole('button', { name: /pokemon-1/i }));
+
+    expect(await screen.findByRole('heading', { level: 2, name: 'pokemon-1' })).toBeInTheDocument();
+    expect(mockedFetchPokemonDetail).toHaveBeenCalledWith('pokemon-1');
+  });
+
+  it('closes the details panel when the main background is clicked', async () => {
+    const user = userEvent.setup();
+    mockedGetPokemonList.mockResolvedValueOnce({
+      items: makePokemonList(2),
+      totalCount: 40,
+    });
+    mockedFetchPokemonDetail.mockResolvedValueOnce(makePokemon({ name: 'pokemon-1' }));
+
+    renderMainWithRoutes({ initialPath: '/?page=1&details=pokemon-1' });
+
+    expect(await screen.findByRole('heading', { level: 2, name: 'pokemon-1' })).toBeInTheDocument();
+
+    await user.click(screen.getByRole('main'));
+
+    expect(screen.queryByRole('heading', { level: 2, name: 'pokemon-1' })).not.toBeInTheDocument();
+  });
+
+  it('closes the details panel when the close button is clicked', async () => {
+    const user = userEvent.setup();
+    mockedGetPokemonList.mockResolvedValueOnce({
+      items: makePokemonList(2),
+      totalCount: 40,
+    });
+    mockedFetchPokemonDetail.mockResolvedValueOnce(makePokemon({ name: 'pokemon-1' }));
+
+    renderMainWithRoutes({ initialPath: '/?page=1&details=pokemon-1' });
+
+    expect(await screen.findByRole('heading', { level: 2, name: 'pokemon-1' })).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Close details' }));
+
+    expect(screen.queryByRole('heading', { level: 2, name: 'pokemon-1' })).not.toBeInTheDocument();
   });
 
   it('triggers an error caught by ErrorBoundary when "Throw test error" is clicked', async () => {
