@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { MouseEvent } from 'react';
 import { Outlet, useSearchParams } from 'react-router-dom';
 import './Main.css';
@@ -24,19 +24,22 @@ function Main({ searchTerm }: MainProps) {
   const pageParam = searchParams.get('page');
   const page = Number(pageParam) || 1;
 
-  if (pageParam !== String(page)) {
-    setSearchParams({ page: String(page) }, { replace: true });
-  }
+  useEffect(() => {
+    if (pageParam !== String(page)) {
+      setSearchParams({ page: String(page) }, { replace: true });
+    }
+  }, [pageParam, page, setSearchParams]);
 
   const trimmed = searchTerm.trim();
-  const [prevTrimmed, setPrevTrimmed] = useState(trimmed);
+  const prevTrimmedRef = useRef(trimmed);
 
-  if (prevTrimmed !== trimmed) {
-    setPrevTrimmed(trimmed);
+  useEffect(() => {
+    if (prevTrimmedRef.current === trimmed) return;
+    prevTrimmedRef.current = trimmed;
     if (page !== 1) {
       setSearchParams({ page: '1' }, { replace: true });
     }
-  }
+  }, [trimmed, page, setSearchParams]);
 
   const selectedName = searchParams.get('details');
 
