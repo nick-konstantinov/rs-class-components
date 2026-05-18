@@ -11,6 +11,12 @@
   grid-template-columns: 1fr 35%;
 }
 
+@media (max-width: 600px) {
+  .main--split {
+    grid-template-columns: 1fr;
+  }
+}
+
 .main__list {
   min-width: 0;
 }
