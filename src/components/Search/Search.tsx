@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { ChangeEvent, SyntheticEvent } from 'react';
 import './Search.css';
+import Button from '../Button/Button';
 
 interface SearchProps {
   initialTerm: string;
@@ -35,9 +36,9 @@ function Search({ initialTerm, onSearch }: SearchProps) {
         value={value}
         onChange={handleChange}
       />
-      <button type="submit" className="search__button">
+      <Button type="submit" variant="primary">
         Search
-      </button>
+      </Button>
     </form>
   );
 }
