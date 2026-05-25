@@ -38,3 +38,10 @@
   font-weight: 700;
   text-decoration: underline;
 }
+
+@media (max-width: 600px) {
+  .header .theme-toggle {
+    position: static;
+    margin-top: 0.5rem;
+  }
+}
