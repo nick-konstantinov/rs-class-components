@@ -1,7 +1,9 @@
-import type { KeyboardEvent } from 'react';
+import type { KeyboardEvent, MouseEvent } from 'react';
 import './Card.css';
 import placeholderSprite from '../../assets/pokemon-placeholder.svg';
 import type { PokemonItem } from '../../types/pokemon';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import { selectIsSelected, toggleSelected } from '../../store/slices/selectedItemsSlice';
 
 interface CardProps {
   item: PokemonItem;
@@ -10,6 +12,9 @@ interface CardProps {
 }
 
 function Card({ item, onSelect, isSelected }: CardProps) {
+  const dispatch = useAppDispatch();
+  const isChecked = useAppSelector(selectIsSelected(item.name));
+
   const handleClick = () => {
     onSelect?.(item.name);
   };
@@ -19,6 +24,14 @@ function Card({ item, onSelect, isSelected }: CardProps) {
       event.preventDefault();
       onSelect?.(item.name);
     }
+  };
+
+  const handleCheckboxClick = (event: MouseEvent<HTMLElement>) => {
+    event.stopPropagation();
+  };
+
+  const handleCheckboxChange = () => {
+    dispatch(toggleSelected(item));
   };
 
   const className = isSelected ? 'card card--selected' : 'card';
@@ -32,13 +45,23 @@ function Card({ item, onSelect, isSelected }: CardProps) {
       onKeyDown={handleKeyDown}
       aria-current={isSelected ? 'true' : undefined}
     >
+      <label className="card__checkbox" onClick={handleCheckboxClick}>
+        <input
+          type="checkbox"
+          checked={isChecked}
+          onChange={handleCheckboxChange}
+          aria-label={`Select ${item.name}`}
+        />
+      </label>
+
       <img src={item.sprite ?? placeholderSprite} alt={item.name} className="card__image" />
 
       <h3 className="card__title">{item.name}</h3>
 
       <p className="card__description">
         <span>
-          <strong>Types:</strong> {item.types}
+          <strong>Types:</strong>
+          {item.types}
         </span>
         <span>
           <strong>Abilities:</strong> {item.abilities}
