@@ -1,4 +1,4 @@
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
+import { createSelector, createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type { PokemonItem } from '../../types/pokemon';
 import type { RootState } from '../index';
 
@@ -33,7 +33,9 @@ export default selectedItemsSlice.reducer;
 
 export const selectSelectedMap = (state: RootState) => state.selectedItems.byName;
 
-export const selectSelectedList = (state: RootState) => Object.values(state.selectedItems.byName);
+export const selectSelectedList = createSelector([selectSelectedMap], (byName) =>
+  Object.values(byName),
+);
 
 export const selectSelectedCount = (state: RootState) =>
   Object.keys(state.selectedItems.byName).length;
