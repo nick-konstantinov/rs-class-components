@@ -4,7 +4,7 @@ import { makePokemon } from '../test-utils/mockPokemon';
 
 describe('itemsToCsv', () => {
   it('returns only the header for an empty array', () => {
-    expect(itemsToCsv([])).toBe('name,types,abilities,height,weight,sprite');
+    expect(itemsToCsv([])).toBe('#,Name,Types,Abilities,Height,Weight,Sprite');
   });
 
   it('joins header and rows with CRLF', () => {
@@ -18,8 +18,8 @@ describe('itemsToCsv', () => {
     });
 
     expect(itemsToCsv([item])).toBe(
-      'name,types,abilities,height,weight,sprite\r\n' +
-        'pikachu,electric,static,4,60,https://example.test/pikachu.png',
+      '#,Name,Types,Abilities,Height,Weight,Sprite\r\n' +
+        '1,pikachu,electric,static,4,60,https://example.test/pikachu.png',
     );
   });
 

@@ -1,6 +1,6 @@
 import type { PokemonItem } from '../types/pokemon';
 
-const HEADERS = ['name', 'types', 'abilities', 'height', 'weight', 'sprite'] as const;
+const HEADERS = ['#', 'Name', 'Types', 'Abilities', 'Height', 'Weight', 'Sprite'] as const;
 
 function escapeCsvField(value: string): string {
   if (/[",\r\n]/.test(value)) {
@@ -9,8 +9,9 @@ function escapeCsvField(value: string): string {
   return value;
 }
 
-function itemToRow(item: PokemonItem): string {
+function itemToRow(item: PokemonItem, index: number): string {
   const fields = [
+    String(index + 1),
     item.name,
     item.types,
     item.abilities,
