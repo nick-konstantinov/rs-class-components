@@ -3,6 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 import Header from './components/Header/Header';
 import Main from './components/Main/Main';
 import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
+import Flyout from './components/Flyout/Flyout';
 import About from './pages/About/About';
 import NotFound from './pages/NotFound/NotFound';
 import { useLocalStorage } from './hooks/useLocalStorage';
@@ -25,6 +26,8 @@ function App() {
           <Route path="*" element={<NotFound />} />
         </Routes>
       </ErrorBoundary>
+
+      <Flyout />
     </div>
   );
 }

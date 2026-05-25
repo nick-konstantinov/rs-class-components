@@ -1,0 +1,25 @@
+.flyout {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 16px 24px 16px;
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+.flyout__count {
+  font-weight: 500;
+  color: var(--text-h);
+}
+
+.flyout__count-number {
+  font-weight: 700;
+  color: var(--accent);
+}
