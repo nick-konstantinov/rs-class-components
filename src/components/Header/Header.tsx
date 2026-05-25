@@ -1,5 +1,6 @@
 import './Header.css';
 import Search from '../Search/Search';
+import ThemeToggle from '../ThemeToggle/ThemeToggle';
 import { NavLink } from 'react-router-dom';
 
 interface HeaderProps {
@@ -20,6 +21,7 @@ function Header({ initialTerm, onSearch }: HeaderProps) {
         </NavLink>
       </nav>
       <Search initialTerm={initialTerm} onSearch={onSearch} />
+      <ThemeToggle />
     </header>
   );
 }

@@ -7,6 +7,7 @@ import { SEARCH_TERM_STORAGE_KEY } from './constants';
 import { getPokemonList, searchPokemon } from './api/pokemon';
 import { makePokemon, makePokemonList } from './test-utils/mockPokemon';
 import { makeStore } from './test-utils/renderWithStore';
+import { ThemeProvider } from './context/ThemeProvider';
 
 vi.mock('./api/pokemon', () => ({
   getPokemonList: vi.fn(),
@@ -20,7 +21,9 @@ const renderApp = (initialPath = '/') =>
   render(<App />, {
     wrapper: ({ children }) => (
       <Provider store={makeStore()}>
-        <MemoryRouter initialEntries={[initialPath]}>{children}</MemoryRouter>
+        <ThemeProvider>
+          <MemoryRouter initialEntries={[initialPath]}>{children}</MemoryRouter>
+        </ThemeProvider>
       </Provider>
     ),
   });

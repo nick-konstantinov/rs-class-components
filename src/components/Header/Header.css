@@ -1,7 +1,14 @@
 .header {
+  position: relative;
   padding: 1.5rem;
   border-bottom: 1px solid var(--border);
   text-align: center;
+}
+
+.header .theme-toggle {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
 }
 
 .header__title {
