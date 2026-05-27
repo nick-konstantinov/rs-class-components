@@ -1,0 +1,36 @@
+.about {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  color: var(--text);
+  line-height: 1.6;
+  text-align: left;
+}
+
+.about__title {
+  margin: 0 0 1rem;
+  color: var(--text-h);
+}
+
+.about__subtitle {
+  margin: 1.5rem 0 0.5rem;
+  color: var(--text-h);
+}
+
+.about__intro {
+  margin: 0 0 1rem;
+}
+
+.about__list {
+  margin: 0;
+  padding-left: 1.25rem;
+}
+
+.about__link {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.about__link:hover {
+  text-decoration: underline;
+}

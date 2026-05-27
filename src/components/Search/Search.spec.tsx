@@ -1,7 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Search from './Search';
-import { SEARCH_TERM_STORAGE_KEY } from '../../constants';
 
 describe('Search', () => {
   it('renders an input pre-filled with initialTerm', () => {
@@ -20,7 +19,7 @@ describe('Search', () => {
     expect(input).toHaveValue('pika');
   });
 
-  it('fires onSearch("") and writes empty string to localStorage when input is cleared', async () => {
+  it('fires onSearch("") when input is cleared', async () => {
     const user = userEvent.setup();
     const onSearch = vi.fn();
 
@@ -31,10 +30,9 @@ describe('Search', () => {
 
     expect(input).toHaveValue('');
     expect(onSearch).toHaveBeenCalledWith('');
-    expect(localStorage.getItem(SEARCH_TERM_STORAGE_KEY)).toBe('');
   });
 
-  it('trims, persists, and notifies onSearch when the user submits via Enter', async () => {
+  it('trims and notifies onSearch when the user submits via Enter', async () => {
     const user = userEvent.setup();
     const onSearch = vi.fn();
 
@@ -44,7 +42,6 @@ describe('Search', () => {
 
     expect(onSearch).toHaveBeenCalledTimes(1);
     expect(onSearch).toHaveBeenCalledWith('pikachu');
-    expect(localStorage.getItem(SEARCH_TERM_STORAGE_KEY)).toBe('pikachu');
     expect(screen.getByRole('textbox')).toHaveValue('pikachu');
   });
 
@@ -57,6 +54,5 @@ describe('Search', () => {
     await user.click(screen.getByRole('button', { name: 'Search' }));
 
     expect(onSearch).toHaveBeenCalledWith('charmander');
-    expect(localStorage.getItem(SEARCH_TERM_STORAGE_KEY)).toBe('charmander');
   });
 });

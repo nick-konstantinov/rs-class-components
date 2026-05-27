@@ -1,148 +1,139 @@
-import { Component } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import type { MouseEvent } from 'react';
+import { Outlet, useSearchParams } from 'react-router-dom';
 import './Main.css';
-import Loader from '../Loader/Loader';
-import CardList from '../CardList/CardList';
-import { getPokemonList, searchPokemon } from '../../api/pokemon';
-import type { PokemonItem } from '../../types/pokemon';
+import Loader from '@/components/Loader/Loader';
+import CardList from '@/components/CardList/CardList';
+import Pagination from '@/components/Pagination/Pagination';
+import { getPokemonList, searchPokemon } from '@/api/pokemon';
+import type { PokemonItem } from '@/types/pokemon';
+import { RESULTS_PER_PAGE } from '@/constants';
 
 interface MainProps {
   searchTerm: string;
 }
 
-interface MainState {
-  items: PokemonItem[];
-  loading: boolean;
-  loadingMore: boolean;
-  error: string | null;
-  page: number;
-  crash: boolean;
-}
+function Main({ searchTerm }: MainProps) {
+  const [items, setItems] = useState<PokemonItem[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [crash, setCrash] = useState(false);
 
-class Main extends Component<MainProps, MainState> {
-  state: MainState = {
-    items: [],
-    loading: false,
-    loadingMore: false,
-    error: null,
-    page: 0,
-    crash: false,
-  };
+  const [searchParams, setSearchParams] = useSearchParams();
+  const pageParam = searchParams.get('page');
+  const page = Number(pageParam) || 1;
 
-  componentDidMount() {
-    void this.fetchData(0);
-  }
-
-  componentDidUpdate(prevProps: MainProps, prevState: MainState) {
-    const prev = prevProps.searchTerm.trim();
-    const current = this.props.searchTerm.trim();
-
-    if (prev !== current) {
-      this.setState(
-        {
-          page: 0,
-          items: [],
-        },
-        () => {
-          void this.fetchData(0);
-        },
-      );
-      return;
+  useEffect(() => {
+    if (pageParam !== String(page)) {
+      setSearchParams({ page: String(page) }, { replace: true });
     }
+  }, [pageParam, page, setSearchParams]);
 
-    if (prevState.page !== this.state.page && !current) {
-      void this.fetchData(this.state.page);
+  const trimmed = searchTerm.trim();
+  const prevTrimmedRef = useRef(trimmed);
+
+  useEffect(() => {
+    if (prevTrimmedRef.current === trimmed) return;
+    prevTrimmedRef.current = trimmed;
+    if (page !== 1) {
+      setSearchParams({ page: '1' }, { replace: true });
     }
-  }
+  }, [trimmed, page, setSearchParams]);
 
-  fetchData = async (page: number = 0) => {
-    try {
-      const isSearch = this.props.searchTerm.trim();
+  const selectedName = searchParams.get('details');
 
-      this.setState({
-        error: null,
-        loading: page === 0,
-        loadingMore: page > 0,
-      });
+  useEffect(() => {
+    let cancelled = false;
 
-      let items: PokemonItem[];
+    const run = async () => {
+      try {
+        setError(null);
+        setLoading(true);
 
-      if (isSearch) {
-        items = await searchPokemon(this.props.searchTerm);
+        const result = trimmed ? await searchPokemon(trimmed) : await getPokemonList(page);
 
-        this.setState({
-          items,
-          loading: false,
-          loadingMore: false,
-        });
+        if (cancelled) return;
 
-        return;
+        setItems(result.items);
+        setTotalCount(result.totalCount);
+      } catch (err) {
+        if (cancelled) return;
+        setError(err instanceof Error ? err.message : 'Unknown error');
+      } finally {
+        if (!cancelled) setLoading(false);
       }
+    };
 
-      const newItems = await getPokemonList(page);
+    void run();
 
-      this.setState((prev) => ({
-        items: page === 0 ? newItems : [...prev.items, ...newItems],
-        loading: false,
-        loadingMore: false,
-      }));
-    } catch (err) {
-      this.setState({
-        error: err instanceof Error ? err.message : 'Unknown error',
-        loading: false,
-        loadingMore: false,
-      });
-    }
+    return () => {
+      cancelled = true;
+    };
+  }, [trimmed, page]);
+
+  if (crash) {
+    throw new Error('Test error');
+  }
+
+  const totalPages = Math.ceil(totalCount / RESULTS_PER_PAGE);
+  const isEmpty = !loading && items.length === 0;
+
+  const handlePageChange = (next: number) => {
+    setSearchParams({ page: String(next) });
   };
 
-  loadNextPage = () => {
-    if (this.props.searchTerm.trim()) return;
-
-    this.setState((prev) => ({
-      page: prev.page + 1,
-    }));
+  const handleSelectCard = (name: string) => {
+    setSearchParams({ page: String(page), details: name });
   };
 
-  render() {
-    const { items, loading, loadingMore, error } = this.state;
-    const isSearch = this.props.searchTerm.trim();
-    const isEmpty = !loading && items.length === 0;
+  const handleBackgroundClick = (event: MouseEvent<HTMLElement>) => {
+    if (event.target !== event.currentTarget) return;
+    if (!selectedName) return;
 
-    if (this.state.crash) {
-      throw new Error('Test error');
-    }
+    const next = new URLSearchParams(searchParams);
+    next.delete('details');
+    setSearchParams(next, { replace: true });
+  };
 
-    return (
-      <main className="main">
+  const className = selectedName ? 'main main--split' : 'main';
+
+  return (
+    <main className={className} onClick={handleBackgroundClick}>
+      <div className="main__list">
         {error && <p className="main__error">{error}</p>}
 
         {loading && <Loader />}
 
         {!loading && !error && isEmpty && (
           <p className="main__placeholder">
-            {isSearch ? 'No Pokemon found' : 'No Pokemon available'}
+            {trimmed ? 'No Pokemon found' : 'No Pokemon available'}
           </p>
         )}
 
-        {!loading && items.length > 0 && <CardList items={items} />}
-
-        {loadingMore && <Loader />}
+        {!loading && items.length > 0 && (
+          <>
+            <CardList items={items} onSelectCard={handleSelectCard} selectedName={selectedName} />
+            <Pagination
+              currentPage={page}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          </>
+        )}
 
         <div className="main__controls">
-          {!isSearch && !loading && items.length > 0 && (
-            <button onClick={this.loadNextPage} className="main__load-more">
-              Load more
-            </button>
-          )}
-
-          {!loading && !loadingMore && (
-            <button onClick={() => this.setState({ crash: true })} className="main__error-btn">
+          {!loading && (
+            <button onClick={() => setCrash(true)} className="main__error-btn">
               Throw test error
             </button>
           )}
         </div>
-      </main>
-    );
-  }
+      </div>
+
+      <Outlet />
+    </main>
+  );
 }
 
 export default Main;

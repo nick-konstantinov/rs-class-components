@@ -1,4 +1,4 @@
-import type { PokemonItem } from '../types/pokemon';
+import type { PokemonItem } from '@/types/pokemon';
 
 export function makePokemon(overrides: Partial<PokemonItem> = {}): PokemonItem {
   return {

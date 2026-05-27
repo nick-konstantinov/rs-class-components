@@ -14,7 +14,7 @@
     "format:fix": "prettier --write .",
     "typecheck": "tsc --noEmit",
     "prepare": "husky",
-    "predeploy": "npm run build",
+    "predeploy": "npm run build && node -e \"require('fs').copyFileSync('dist/index.html','dist/404.html')\"",
     "deploy": "gh-pages -d dist",
     "test": "vitest run",
     "test:watch": "vitest",
@@ -22,7 +22,8 @@
   },
   "dependencies": {
     "react": "^19.2.5",
-    "react-dom": "^19.2.5"
+    "react-dom": "^19.2.5",
+    "react-router-dom": "^7.15.1"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

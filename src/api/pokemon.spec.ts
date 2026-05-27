@@ -1,11 +1,12 @@
 import { type MockInstance } from 'vitest';
-import { ApiError, getPokemonList, searchPokemon } from './pokemon';
+import { fetchPokemonDetail, getPokemonList, searchPokemon } from './pokemon';
+import { ApiError } from '@/services/http';
 import {
   makeDetailResponse,
   makeErrorResponse,
   makeFetchResponse,
   makeListResponse,
-} from '../test-utils/mockApi';
+} from '@/test-utils/mockApi';
 
 describe('api/pokemon', () => {
   let fetchSpy: MockInstance<typeof fetch>;
@@ -32,18 +33,19 @@ describe('api/pokemon', () => {
           ),
         );
 
-      const items = await getPokemonList(0);
+      const { items, totalCount } = await getPokemonList(1);
 
       expect(items).toHaveLength(2);
       expect(items[0].name).toBe('pikachu');
       expect(items[1].name).toBe('charmander');
       expect(items[1].types).toBe('fire');
+      expect(totalCount).toBe(2);
     });
 
-    it('uses page х 20 as the offset', async () => {
+    it('uses (page - 1) x 20 as the offset', async () => {
       fetchSpy.mockResolvedValueOnce(makeFetchResponse(makeListResponse([])));
 
-      await getPokemonList(2);
+      await getPokemonList(3);
 
       expect(fetchSpy).toHaveBeenCalledWith(expect.stringContaining('offset=40'));
     });
@@ -51,7 +53,7 @@ describe('api/pokemon', () => {
     it('throws ApiError with 5xx status', async () => {
       fetchSpy.mockResolvedValueOnce(makeErrorResponse(500));
 
-      await expect(getPokemonList(0)).rejects.toThrow(
+      await expect(getPokemonList(1)).rejects.toThrow(
         'Server is unavailable, please try again later',
       );
     });
@@ -59,7 +61,7 @@ describe('api/pokemon', () => {
     it('throws ApiError with non-404 4xx status', async () => {
       fetchSpy.mockResolvedValueOnce(makeErrorResponse(400));
 
-      await expect(getPokemonList(0)).rejects.toThrow('Request failed (400)');
+      await expect(getPokemonList(1)).rejects.toThrow('Request failed (400)');
     });
   });
 
@@ -67,22 +69,24 @@ describe('api/pokemon', () => {
     it('returns one item on successful fetch', async () => {
       fetchSpy.mockResolvedValueOnce(makeFetchResponse(makeDetailResponse({ name: 'pikachu' })));
 
-      const items = await searchPokemon('pikachu');
+      const { items, totalCount } = await searchPokemon('pikachu');
 
       expect(items).toHaveLength(1);
       expect(items[0].name).toBe('pikachu');
+      expect(totalCount).toBe(1);
     });
 
-    it('returns an empty array on 404', async () => {
+    it('returns an empty page on 404', async () => {
       fetchSpy.mockResolvedValueOnce(makeErrorResponse(404));
 
-      const items = await searchPokemon('missingno');
+      const { items, totalCount } = await searchPokemon('missingno');
 
       expect(items).toEqual([]);
+      expect(totalCount).toBe(0);
     });
 
-    it('returns an empty array for whitespace term without calling fetch', async () => {
-      const items = await searchPokemon('   ');
+    it('returns an empty page for whitespace term without calling fetch', async () => {
+      const { items } = await searchPokemon('   ');
 
       expect(items).toEqual([]);
       expect(fetchSpy).not.toHaveBeenCalled();
@@ -100,6 +104,24 @@ describe('api/pokemon', () => {
       fetchSpy.mockResolvedValueOnce(makeErrorResponse(500));
 
       await expect(searchPokemon('pikachu')).rejects.toThrow('Server is unavailable');
+    });
+  });
+
+  describe('fetchPokemonDetail', () => {
+    it('fetches the detail and maps it to a PokemonItem', async () => {
+      fetchSpy.mockResolvedValueOnce(makeFetchResponse(makeDetailResponse({ name: 'bulbasaur' })));
+
+      const item = await fetchPokemonDetail('bulbasaur');
+
+      expect(item.name).toBe('bulbasaur');
+      expect(item.types).toBe('electric');
+      expect(fetchSpy).toHaveBeenCalledWith(expect.stringContaining('/pokemon/bulbasaur'));
+    });
+
+    it('throws ApiError on 404', async () => {
+      fetchSpy.mockResolvedValueOnce(makeErrorResponse(404));
+
+      await expect(fetchPokemonDetail('missingno')).rejects.toThrow('Not found');
     });
   });
 
