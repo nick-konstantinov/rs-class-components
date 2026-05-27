@@ -1,5 +1,6 @@
 import './Header.css';
-import Search from '../Search/Search';
+import Search from '@/components/Search/Search';
+import { ROUTES } from '@/routes';
 import { NavLink } from 'react-router-dom';
 
 interface HeaderProps {
@@ -12,10 +13,10 @@ function Header({ initialTerm, onSearch }: HeaderProps) {
     <header className="header">
       <h1 className="header__title">Pokemon Search</h1>
       <nav className="header__nav" aria-label="Main navigation">
-        <NavLink to="/" end className="header__nav-link">
+        <NavLink to={ROUTES.home} end className="header__nav-link">
           Home
         </NavLink>
-        <NavLink to="/about" className="header__nav-link">
+        <NavLink to={ROUTES.about} className="header__nav-link">
           About
         </NavLink>
       </nav>

@@ -2,12 +2,12 @@ import { useEffect, useRef, useState } from 'react';
 import type { MouseEvent } from 'react';
 import { Outlet, useSearchParams } from 'react-router-dom';
 import './Main.css';
-import Loader from '../Loader/Loader';
-import CardList from '../CardList/CardList';
-import Pagination from '../Pagination/Pagination';
-import { getPokemonList, searchPokemon } from '../../api/pokemon';
-import type { PokemonItem } from '../../types/pokemon';
-import { RESULTS_PER_PAGE } from '../../constants';
+import Loader from '@/components/Loader/Loader';
+import CardList from '@/components/CardList/CardList';
+import Pagination from '@/components/Pagination/Pagination';
+import { getPokemonList, searchPokemon } from '@/api/pokemon';
+import type { PokemonItem } from '@/types/pokemon';
+import { RESULTS_PER_PAGE } from '@/constants';
 
 interface MainProps {
   searchTerm: string;

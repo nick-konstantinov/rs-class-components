@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import './Details.css';
-import Loader from '../Loader/Loader';
-import placeholderSprite from '../../assets/pokemon-placeholder.svg';
-import { fetchPokemonDetail } from '../../api/pokemon';
-import type { PokemonItem } from '../../types/pokemon';
+import Loader from '@/components/Loader/Loader';
+import placeholderSprite from '@/assets/images/pokemon-placeholder.svg';
+import { fetchPokemonDetail } from '@/api/pokemon';
+import type { PokemonItem } from '@/types/pokemon';
 
 interface DetailsProps {
   name: string;

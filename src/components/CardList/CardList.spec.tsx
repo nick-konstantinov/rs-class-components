@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import CardList from './CardList';
-import { makePokemonList } from '../../test-utils/mockPokemon';
+import { makePokemonList } from '@/test-utils/mockPokemon';
 
 describe('CardList', () => {
   it('renders one card per item', () => {

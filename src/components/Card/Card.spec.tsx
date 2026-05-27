@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Card from './Card';
-import { makePokemon } from '../../test-utils/mockPokemon.ts';
+import { makePokemon } from '@/test-utils/mockPokemon.ts';
 
 describe('Card', () => {
   it('renders pokemon details', () => {

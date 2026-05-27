@@ -1,39 +1,15 @@
-import type { PokemonDetailResponse, PokemonItem, PokemonListResponse } from '../types/pokemon';
-import { RESULTS_PER_PAGE } from '../constants';
+import type { PokemonDetailResponse, PokemonItem, PokemonListResponse } from '@/types/pokemon';
+import { RESULTS_PER_PAGE } from '@/constants';
+import { ApiError, fetchJson } from '@/services/http';
 
-const BASE_URL = 'https://pokeapi.co/api/v2';
+const BASE_URL = import.meta.env.VITE_POKEMON_API_URL;
 
-export class ApiError extends Error {
-  status: number;
-
-  constructor(status: number, message: string) {
-    super(message);
-    this.status = status;
-    this.name = 'ApiError';
-  }
-}
-
-export interface PokemonPage {
-  items: PokemonItem[];
+export interface Page<T> {
+  items: T[];
   totalCount: number;
 }
 
-function getErrorMessage(status: number): string {
-  if (status === 404) return 'Not found';
-  if (status >= 400 && status < 500) return `Request failed (${status})`;
-  if (status >= 500) return 'Server is unavailable, please try again later';
-  return 'Unknown error';
-}
-
-async function fetchJson<T>(url: string): Promise<T> {
-  const response = await fetch(url);
-
-  if (!response.ok) {
-    throw new ApiError(response.status, getErrorMessage(response.status));
-  }
-
-  return (await response.json()) as T;
-}
+export type PokemonPage = Page<PokemonItem>;
 
 function detailToItem(detail: PokemonDetailResponse): PokemonItem {
   const types = detail.types.map((t) => t.type.name).join(', ');

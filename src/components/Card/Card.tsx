@@ -1,7 +1,7 @@
 import type { KeyboardEvent } from 'react';
 import './Card.css';
-import placeholderSprite from '../../assets/pokemon-placeholder.svg';
-import type { PokemonItem } from '../../types/pokemon';
+import placeholderSprite from '@/assets/images/pokemon-placeholder.svg';
+import type { PokemonItem } from '@/types/pokemon';
 
 interface CardProps {
   item: PokemonItem;

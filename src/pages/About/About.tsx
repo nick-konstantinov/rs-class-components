@@ -1,3 +1,4 @@
+import { EXTERNAL_LINKS } from '@/external-links';
 import './About.css';
 
 function About() {
@@ -7,12 +8,7 @@ function About() {
 
       <p className="about__intro">
         Hi! I'm <strong>Nick Konstantinov</strong>, a student of the{' '}
-        <a
-          className="about__link"
-          href="https://rs.school/courses/reactjs"
-          target="_blank"
-          rel="noreferrer"
-        >
+        <a className="about__link" href={EXTERNAL_LINKS.course} target="_blank" rel="noreferrer">
           Rolling Scopes School: React 2026Q2
         </a>{' '}
         course. This Pokemon search app is built as Task 3 of the React module.
@@ -24,7 +20,7 @@ function About() {
           GitHub:{' '}
           <a
             className="about__link"
-            href="https://github.com/nick-konstantinov"
+            href={EXTERNAL_LINKS.authorGithub}
             target="_blank"
             rel="noreferrer"
           >
@@ -33,7 +29,7 @@ function About() {
         </li>
         <li>
           Email:{' '}
-          <a className="about__link" href="mailto:nick.konstantinov.job@gmail.com">
+          <a className="about__link" href={EXTERNAL_LINKS.authorEmail}>
             nick.konstantinov.job@gmail.com
           </a>
         </li>
@@ -44,7 +40,7 @@ function About() {
         Task descriptions and resources:{' '}
         <a
           className="about__link"
-          href="https://github.com/rolling-scopes-school/tasks/blob/master/react/README.md"
+          href={EXTERNAL_LINKS.courseTasks}
           target="_blank"
           rel="noreferrer"
         >

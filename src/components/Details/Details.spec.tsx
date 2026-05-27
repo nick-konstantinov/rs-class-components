@@ -1,10 +1,10 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Details from './Details';
-import { fetchPokemonDetail } from '../../api/pokemon';
-import { makePokemon } from '../../test-utils/mockPokemon';
+import { fetchPokemonDetail } from '@/api/pokemon';
+import { makePokemon } from '@/test-utils/mockPokemon';
 
-vi.mock('../../api/pokemon', () => ({
+vi.mock('@/api/pokemon', () => ({
   fetchPokemonDetail: vi.fn(),
 }));
 

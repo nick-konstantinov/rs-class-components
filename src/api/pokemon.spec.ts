@@ -1,11 +1,12 @@
 import { type MockInstance } from 'vitest';
-import { ApiError, fetchPokemonDetail, getPokemonList, searchPokemon } from './pokemon';
+import { fetchPokemonDetail, getPokemonList, searchPokemon } from './pokemon';
+import { ApiError } from '@/services/http';
 import {
   makeDetailResponse,
   makeErrorResponse,
   makeFetchResponse,
   makeListResponse,
-} from '../test-utils/mockApi';
+} from '@/test-utils/mockApi';
 
 describe('api/pokemon', () => {
   let fetchSpy: MockInstance<typeof fetch>;
