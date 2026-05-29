@@ -3,10 +3,17 @@ import { render, type RenderOptions } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import selectedItemsReducer, { toggleSelected } from '../store/slices/selectedItemsSlice';
+import { pokemonApi } from '../store/pokemonApi';
 import type { PokemonItem } from '../types/pokemon';
 
 export function makeStore(preselected: PokemonItem[] = []) {
-  const store = configureStore({ reducer: { selectedItems: selectedItemsReducer } });
+  const store = configureStore({
+    reducer: {
+      selectedItems: selectedItemsReducer,
+      [pokemonApi.reducerPath]: pokemonApi.reducer,
+    },
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(pokemonApi.middleware),
+  });
   preselected.forEach((item) => store.dispatch(toggleSelected(item)));
 
   return store;
