@@ -1,31 +1,21 @@
 import './App.css';
-import { Route, Routes } from 'react-router-dom';
-import Header from './components/Header/Header';
-import Main from './components/Main/Main';
-import ErrorBoundary from './components/ErrorBoundary/ErrorBoundary';
-import Flyout from './components/Flyout/Flyout';
-import About from './pages/About/About';
-import NotFound from './pages/NotFound/NotFound';
-import { useLocalStorage } from './hooks/useLocalStorage';
-import { SEARCH_TERM_STORAGE_KEY } from './constants';
-import DetailsOutletSlot from './components/Details/DetailsOutletSlot';
+import { useRoutes } from 'react-router-dom';
+import Header from '@/components/Header/Header';
+import ErrorBoundary from '@/components/ErrorBoundary/ErrorBoundary';
+import Flyout from '@/components/Flyout/Flyout';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
+import { SEARCH_TERM_STORAGE_KEY } from '@/constants';
+import { getRouteConfig } from '@/routes';
 
 function App() {
   const [searchTerm, setSearchTerm] = useLocalStorage<string>(SEARCH_TERM_STORAGE_KEY, '');
+  const routes = useRoutes(getRouteConfig(searchTerm));
 
   return (
     <div className="app">
       <Header initialTerm={searchTerm} onSearch={setSearchTerm} />
 
-      <ErrorBoundary>
-        <Routes>
-          <Route path="/" element={<Main searchTerm={searchTerm} />}>
-            <Route index element={<DetailsOutletSlot />} />
-          </Route>
-          <Route path="/about" element={<About />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </ErrorBoundary>
+      <ErrorBoundary>{routes}</ErrorBoundary>
 
       <Flyout />
     </div>

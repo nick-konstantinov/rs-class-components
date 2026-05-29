@@ -1,6 +1,6 @@
 import './CardList.css';
-import Card from '../Card/Card';
-import type { PokemonItem } from '../../types/pokemon';
+import Card from '@/components/Card/Card';
+import type { PokemonItem } from '@/types/pokemon';
 
 interface CardListProps {
   items: PokemonItem[];

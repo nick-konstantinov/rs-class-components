@@ -3,13 +3,14 @@ import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import Main from './Main';
-import DetailsOutletSlot from '../Details/DetailsOutletSlot';
-import ErrorBoundary from '../ErrorBoundary/ErrorBoundary';
-import { fetchPokemonDetail, getPokemonList, searchPokemon } from '../../api/pokemon';
-import { makePokemon, makePokemonList } from '../../test-utils/mockPokemon';
-import { makeStore } from '../../test-utils/renderWithStore';
+import DetailsOutletSlot from '@/components/Details/DetailsOutletSlot';
+import ErrorBoundary from '@/components/ErrorBoundary/ErrorBoundary';
+import { fetchPokemonDetail, getPokemonList, searchPokemon } from '@/api/pokemon';
+import { makePokemon, makePokemonList } from '@/test-utils/mockPokemon';
+import { makeStore } from '@/test-utils/renderWithStore';
+import { ROUTES } from '@/routes';
 
-vi.mock('../../api/pokemon', () => ({
+vi.mock('@/api/pokemon', () => ({
   getPokemonList: vi.fn(),
   searchPokemon: vi.fn(),
   fetchPokemonDetail: vi.fn(),
@@ -31,9 +32,9 @@ const renderMain = (props: { searchTerm?: string; initialPath?: string } = {}) =
 const renderMainWithRoutes = (props: { searchTerm?: string; initialPath?: string } = {}) =>
   render(
     <Provider store={makeStore()}>
-      <MemoryRouter initialEntries={[props.initialPath ?? '/']}>
+      <MemoryRouter initialEntries={[props.initialPath ?? ROUTES.home]}>
         <Routes>
-          <Route path="/" element={<Main searchTerm={props.searchTerm ?? ''} />}>
+          <Route path={ROUTES.home} element={<Main searchTerm={props.searchTerm ?? ''} />}>
             <Route index element={<DetailsOutletSlot />} />
           </Route>
         </Routes>

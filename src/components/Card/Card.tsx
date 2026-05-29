@@ -1,9 +1,9 @@
 import type { KeyboardEvent, MouseEvent } from 'react';
 import './Card.css';
-import placeholderSprite from '../../assets/pokemon-placeholder.svg';
-import type { PokemonItem } from '../../types/pokemon';
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import { selectIsSelected, toggleSelected } from '../../store/slices/selectedItemsSlice';
+import placeholderSprite from '@/assets/images/pokemon-placeholder.svg';
+import type { PokemonItem } from '@/types/pokemon';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { selectIsSelected, toggleSelected } from '@/store/slices/selectedItemsSlice';
 
 interface CardProps {
   item: PokemonItem;

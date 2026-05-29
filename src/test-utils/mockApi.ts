@@ -1,4 +1,4 @@
-import type { PokemonDetailResponse, PokemonListResponse } from '../types/pokemon';
+import type { PokemonDetailResponse, PokemonListResponse } from '@/types/pokemon';
 
 export function makeDetailResponse(
   overrides: Partial<PokemonDetailResponse> = {},

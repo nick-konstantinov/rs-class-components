@@ -7,4 +7,14 @@ Rolling Scopes School: React 2026Q2
 - GitHub: [@nick-konstantinov](https://github.com/nick-konstantinov)
 - Email: nick.konstantinov.job@gmail.com
 
+## Setup
+
+Copy the env template before running the project:
+
+```bash
+cp .env.example .env
+```
+
+`.env` is git-ignored — edit it locally if you need to point the app at a different API.
+
 ## Tasks
