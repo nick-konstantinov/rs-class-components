@@ -1,12 +1,12 @@
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Flyout from './Flyout';
-import { renderWithStore } from '../../test-utils/renderWithStore';
-import { makePokemon } from '../../test-utils/mockPokemon';
-import { selectSelectedCount } from '../../store/slices/selectedItemsSlice';
-import { downloadCsv } from '../../utils/csv';
+import { renderWithStore } from '@/test-utils/renderWithStore';
+import { makePokemon } from '@/test-utils/mockPokemon';
+import { selectSelectedCount } from '@/store/slices/selectedItemsSlice';
+import { downloadCsv } from '@/utils/csv';
 
-vi.mock('../../utils/csv', () => ({
+vi.mock('@/utils/csv', () => ({
   downloadCsv: vi.fn(),
 }));
 

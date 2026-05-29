@@ -1,12 +1,12 @@
 import './Flyout.css';
-import Button from '../Button/Button';
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
+import Button from '@/components/Button/Button';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import {
   selectSelectedCount,
   selectSelectedList,
   unselectAll,
-} from '../../store/slices/selectedItemsSlice';
-import { downloadCsv } from '../../utils/csv';
+} from '@/store/slices/selectedItemsSlice';
+import { downloadCsv } from '@/utils/csv';
 
 function Flyout() {
   const dispatch = useAppDispatch();

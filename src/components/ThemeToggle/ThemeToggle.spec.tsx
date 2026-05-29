@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ThemeProvider } from '../../context/ThemeProvider';
+import { ThemeProvider } from '@/context/ThemeProvider';
 import ThemeToggle from './ThemeToggle';
 
 const renderToggle = () => render(<ThemeToggle />, { wrapper: ThemeProvider });

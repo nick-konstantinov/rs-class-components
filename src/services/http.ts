@@ -1,4 +1,4 @@
-import { getErrorMessage } from '@/helpers/errors';
+import { getErrorMessage } from '@/utils/errors';
 
 export class ApiError extends Error {
   status: number;
