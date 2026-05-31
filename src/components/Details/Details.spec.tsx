@@ -1,44 +1,52 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { type MockInstance } from 'vitest';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Details from './Details';
-import { fetchPokemonDetail } from '@/api/pokemon';
-import { makePokemon } from '@/test-utils/mockPokemon';
-
-vi.mock('@/api/pokemon', () => ({
-  fetchPokemonDetail: vi.fn(),
-}));
-
-const mockedFetchPokemonDetail = vi.mocked(fetchPokemonDetail);
+import { renderWithStore } from '@/test-utils/renderWithStore';
+import {
+  makeDetailResponse,
+  makeErrorResponse,
+  makeFetchResponse,
+  requestedUrls,
+} from '@/test-utils/mockApi';
 
 describe('Details', () => {
+  let fetchSpy: MockInstance<typeof fetch>;
+
   beforeEach(() => {
-    mockedFetchPokemonDetail.mockReset();
+    fetchSpy = vi.spyOn(globalThis, 'fetch');
+  });
+
+  afterEach(() => {
+    fetchSpy.mockRestore();
   });
 
   it('shows the loader while fetching and renders the pokemon on success', async () => {
-    mockedFetchPokemonDetail.mockResolvedValueOnce(makePokemon({ name: 'bulbasaur' }));
+    fetchSpy.mockResolvedValueOnce(makeFetchResponse(makeDetailResponse({ name: 'bulbasaur' })));
 
-    render(<Details name="bulbasaur" onClose={() => {}} />);
+    renderWithStore(<Details name="bulbasaur" onClose={() => {}} />);
 
     expect(screen.getByRole('status', { name: 'Loading' })).toBeInTheDocument();
     expect(await screen.findByRole('heading', { name: 'bulbasaur' })).toBeInTheDocument();
-    expect(mockedFetchPokemonDetail).toHaveBeenCalledWith('bulbasaur');
+    expect(requestedUrls(fetchSpy)).toContainEqual(expect.stringContaining('/pokemon/bulbasaur'));
   });
 
-  it('renders error message when fetch fails', async () => {
-    mockedFetchPokemonDetail.mockRejectedValueOnce(new Error('Server is unavailable'));
+  it('renders a human-readable error message when the request fails', async () => {
+    fetchSpy.mockResolvedValueOnce(makeErrorResponse(500));
 
-    render(<Details name="bulbasaur" onClose={() => {}} />);
+    renderWithStore(<Details name="bulbasaur" onClose={() => {}} />);
 
-    expect(await screen.findByText('Server is unavailable')).toBeInTheDocument();
+    expect(
+      await screen.findByText('Server is unavailable, please try again later'),
+    ).toBeInTheDocument();
   });
 
   it('calls onClose when the close button is clicked', async () => {
     const user = userEvent.setup();
     const onClose = vi.fn();
-    mockedFetchPokemonDetail.mockResolvedValueOnce(makePokemon());
+    fetchSpy.mockResolvedValueOnce(makeFetchResponse(makeDetailResponse()));
 
-    render(<Details name="pikachu" onClose={onClose} />);
+    renderWithStore(<Details name="pikachu" onClose={onClose} />);
 
     await user.click(screen.getByRole('button', { name: 'Close details' }));
 
@@ -46,27 +54,33 @@ describe('Details', () => {
   });
 
   it('refetches when the name prop changes', async () => {
-    mockedFetchPokemonDetail
-      .mockResolvedValueOnce(makePokemon({ name: 'bulbasaur' }))
-      .mockResolvedValueOnce(makePokemon({ name: 'charizard' }));
+    fetchSpy
+      .mockResolvedValueOnce(makeFetchResponse(makeDetailResponse({ name: 'bulbasaur' })))
+      .mockResolvedValueOnce(makeFetchResponse(makeDetailResponse({ name: 'charizard' })));
 
-    const { rerender } = render(<Details name="bulbasaur" onClose={() => {}} />);
+    const { rerender } = renderWithStore(<Details name="bulbasaur" onClose={() => {}} />);
 
     await screen.findByRole('heading', { name: 'bulbasaur' });
 
     rerender(<Details name="charizard" onClose={() => {}} />);
 
     expect(await screen.findByRole('heading', { name: 'charizard' })).toBeInTheDocument();
-    expect(mockedFetchPokemonDetail).toHaveBeenCalledTimes(2);
-    expect(mockedFetchPokemonDetail).toHaveBeenLastCalledWith('charizard');
+    expect(fetchSpy).toHaveBeenCalledTimes(2);
+    expect(requestedUrls(fetchSpy)).toContainEqual(expect.stringContaining('/pokemon/charizard'));
   });
 
   it('shows pokemon stats in the description list', async () => {
-    mockedFetchPokemonDetail.mockResolvedValueOnce(
-      makePokemon({ name: 'pikachu', types: 'electric', abilities: 'static' }),
+    fetchSpy.mockResolvedValueOnce(
+      makeFetchResponse(
+        makeDetailResponse({
+          name: 'pikachu',
+          types: [{ type: { name: 'electric' } }],
+          abilities: [{ ability: { name: 'static' } }],
+        }),
+      ),
     );
 
-    render(<Details name="pikachu" onClose={() => {}} />);
+    renderWithStore(<Details name="pikachu" onClose={() => {}} />);
 
     await waitFor(() => {
       expect(screen.getByText('electric')).toBeInTheDocument();

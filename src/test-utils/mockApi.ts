@@ -1,3 +1,4 @@
+import { type MockInstance } from 'vitest';
 import type { PokemonDetailResponse, PokemonListResponse } from '@/types/pokemon';
 
 export function makeDetailResponse(
@@ -35,4 +36,8 @@ export function makeFetchResponse<T>(data: T, status = 200): Response {
 
 export function makeErrorResponse(status: number): Response {
   return new Response(null, { status });
+}
+
+export function requestedUrls(fetchSpy: MockInstance<typeof fetch>): string[] {
+  return fetchSpy.mock.calls.map(([input]) => (input as Request).url);
 }

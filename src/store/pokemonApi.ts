@@ -27,5 +27,13 @@ export const pokemonApi = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: import.meta.env.VITE_POKEMON_API_URL }),
   tagTypes: ['Pokemon'],
   keepUnusedDataFor: CACHE_TTL,
-  endpoints: () => ({}),
+  endpoints: (builder) => ({
+    getPokemonDetail: builder.query<PokemonItem, string>({
+      query: (name) => `pokemon/${name}`,
+      transformResponse: detailToItem,
+      providesTags: ['Pokemon'],
+    }),
+  }),
 });
+
+export const { useGetPokemonDetailQuery } = pokemonApi;

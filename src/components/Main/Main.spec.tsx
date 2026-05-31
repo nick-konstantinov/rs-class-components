@@ -1,3 +1,4 @@
+import { type MockInstance } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
@@ -5,20 +6,19 @@ import { Provider } from 'react-redux';
 import Main from './Main';
 import DetailsOutletSlot from '@/components/Details/DetailsOutletSlot';
 import ErrorBoundary from '@/components/ErrorBoundary/ErrorBoundary';
-import { fetchPokemonDetail, getPokemonList, searchPokemon } from '@/api/pokemon';
+import { getPokemonList, searchPokemon } from '@/api/pokemon';
 import { makePokemon, makePokemonList } from '@/test-utils/mockPokemon';
+import { makeDetailResponse, makeFetchResponse, requestedUrls } from '@/test-utils/mockApi';
 import { makeStore } from '@/test-utils/renderWithStore';
 import { ROUTES } from '@/routes';
 
 vi.mock('@/api/pokemon', () => ({
   getPokemonList: vi.fn(),
   searchPokemon: vi.fn(),
-  fetchPokemonDetail: vi.fn(),
 }));
 
 const mockedGetPokemonList = vi.mocked(getPokemonList);
 const mockedSearchPokemon = vi.mocked(searchPokemon);
-const mockedFetchPokemonDetail = vi.mocked(fetchPokemonDetail);
 
 const renderMain = (props: { searchTerm?: string; initialPath?: string } = {}) =>
   render(<Main searchTerm={props.searchTerm ?? ''} />, {
@@ -43,10 +43,16 @@ const renderMainWithRoutes = (props: { searchTerm?: string; initialPath?: string
   );
 
 describe('Main', () => {
+  let fetchSpy: MockInstance<typeof fetch>;
+
   beforeEach(() => {
     mockedGetPokemonList.mockReset();
     mockedSearchPokemon.mockReset();
-    mockedFetchPokemonDetail.mockReset();
+    fetchSpy = vi.spyOn(globalThis, 'fetch');
+  });
+
+  afterEach(() => {
+    fetchSpy.mockRestore();
   });
 
   it('shows loader on mount and renders the fetched pokemon list', async () => {
@@ -171,7 +177,7 @@ describe('Main', () => {
       items: makePokemonList(2),
       totalCount: 40,
     });
-    mockedFetchPokemonDetail.mockResolvedValueOnce(makePokemon({ name: 'pokemon-1' }));
+    fetchSpy.mockResolvedValueOnce(makeFetchResponse(makeDetailResponse({ name: 'pokemon-1' })));
 
     renderMainWithRoutes();
 
@@ -179,7 +185,7 @@ describe('Main', () => {
     await user.click(screen.getByRole('button', { name: /pokemon-1/i }));
 
     expect(await screen.findByRole('heading', { level: 2, name: 'pokemon-1' })).toBeInTheDocument();
-    expect(mockedFetchPokemonDetail).toHaveBeenCalledWith('pokemon-1');
+    expect(requestedUrls(fetchSpy)).toContainEqual(expect.stringContaining('/pokemon/pokemon-1'));
   });
 
   it('closes the details panel when the main background is clicked', async () => {
@@ -188,7 +194,7 @@ describe('Main', () => {
       items: makePokemonList(2),
       totalCount: 40,
     });
-    mockedFetchPokemonDetail.mockResolvedValueOnce(makePokemon({ name: 'pokemon-1' }));
+    fetchSpy.mockResolvedValueOnce(makeFetchResponse(makeDetailResponse({ name: 'pokemon-1' })));
 
     renderMainWithRoutes({ initialPath: '/?page=1&details=pokemon-1' });
 
@@ -205,7 +211,7 @@ describe('Main', () => {
       items: makePokemonList(2),
       totalCount: 40,
     });
-    mockedFetchPokemonDetail.mockResolvedValueOnce(makePokemon({ name: 'pokemon-1' }));
+    fetchSpy.mockResolvedValueOnce(makeFetchResponse(makeDetailResponse({ name: 'pokemon-1' })));
 
     renderMainWithRoutes({ initialPath: '/?page=1&details=pokemon-1' });
 
