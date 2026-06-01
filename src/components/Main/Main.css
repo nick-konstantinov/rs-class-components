@@ -29,10 +29,11 @@
 .main__controls {
   display: flex;
   justify-content: center;
+  gap: 0.75rem;
   position: relative;
 }
 
-.main__load-more {
+.main__refresh {
   padding: 0.5rem 1.25rem;
   font-size: 1rem;
   border: none;
@@ -43,7 +44,7 @@
   transition: opacity 0.2s;
 }
 
-.main__load-more:hover {
+.main__refresh:hover {
   opacity: 0.85;
 }
 

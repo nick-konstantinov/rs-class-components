@@ -5,7 +5,8 @@ import './Main.css';
 import Loader from '@/components/Loader/Loader';
 import CardList from '@/components/CardList/CardList';
 import Pagination from '@/components/Pagination/Pagination';
-import { useGetPokemonsQuery } from '@/store/pokemonApi';
+import { pokemonApi, useGetPokemonsQuery } from '@/store/pokemonApi';
+import { useAppDispatch } from '@/store/hooks';
 import { getQueryErrorMessage } from '@/utils/errors';
 import { RESULTS_PER_PAGE } from '@/constants';
 
@@ -15,6 +16,7 @@ interface MainProps {
 
 function Main({ searchTerm }: MainProps) {
   const [crash, setCrash] = useState(false);
+  const dispatch = useAppDispatch();
 
   const [searchParams, setSearchParams] = useSearchParams();
   const pageParam = searchParams.get('page');
@@ -69,6 +71,10 @@ function Main({ searchTerm }: MainProps) {
     setSearchParams(next, { replace: true });
   };
 
+  const handleRefresh = () => {
+    dispatch(pokemonApi.util.invalidateTags(['Pokemon']));
+  };
+
   const className = selectedName ? 'main main--split' : 'main';
 
   return (
@@ -97,9 +103,14 @@ function Main({ searchTerm }: MainProps) {
 
         <div className="main__controls">
           {!loading && (
-            <button onClick={() => setCrash(true)} className="main__error-btn">
-              Throw test error
-            </button>
+            <>
+              <button onClick={handleRefresh} className="main__refresh">
+                Refresh
+              </button>
+              <button onClick={() => setCrash(true)} className="main__error-btn">
+                Throw test error
+              </button>
+            </>
           )}
         </div>
       </div>

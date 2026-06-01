@@ -1,5 +1,5 @@
 import { type MockInstance } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { Provider } from 'react-redux';
@@ -250,5 +250,25 @@ describe('Main', () => {
 
     expect(screen.getByRole('heading', { name: 'Something went wrong' })).toBeInTheDocument();
     errorSpy.mockRestore();
+  });
+
+  it('refetches the current page when Refresh is clicked', async () => {
+    const user = userEvent.setup();
+    mockPokemonFetch(fetchSpy, {
+      'offset=0': () => makeFetchResponse(makeListResponse(['pokemon-1', 'pokemon-2'], 60)),
+      'pokemon/pokemon-1': () => makeFetchResponse(makeDetailResponse({ name: 'pokemon-1' })),
+      'pokemon/pokemon-2': () => makeFetchResponse(makeDetailResponse({ name: 'pokemon-2' })),
+    });
+
+    renderMain();
+
+    await screen.findByRole('heading', { name: 'pokemon-1' });
+    const callsBefore = fetchSpy.mock.calls.length;
+
+    await user.click(screen.getByRole('button', { name: 'Refresh' }));
+
+    await waitFor(() => {
+      expect(fetchSpy.mock.calls.length).toBeGreaterThan(callsBefore);
+    });
   });
 });
