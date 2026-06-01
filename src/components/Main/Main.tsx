@@ -5,8 +5,8 @@ import './Main.css';
 import Loader from '@/components/Loader/Loader';
 import CardList from '@/components/CardList/CardList';
 import Pagination from '@/components/Pagination/Pagination';
-import { getPokemonList, searchPokemon } from '@/api/pokemon';
-import type { PokemonItem } from '@/types/pokemon';
+import { useGetPokemonsQuery } from '@/store/pokemonApi';
+import { getQueryErrorMessage } from '@/utils/errors';
 import { RESULTS_PER_PAGE } from '@/constants';
 
 interface MainProps {
@@ -14,10 +14,6 @@ interface MainProps {
 }
 
 function Main({ searchTerm }: MainProps) {
-  const [items, setItems] = useState<PokemonItem[]>([]);
-  const [totalCount, setTotalCount] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [crash, setCrash] = useState(false);
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -43,34 +39,11 @@ function Main({ searchTerm }: MainProps) {
 
   const selectedName = searchParams.get('details');
 
-  useEffect(() => {
-    let cancelled = false;
-
-    const run = async () => {
-      try {
-        setError(null);
-        setLoading(true);
-
-        const result = trimmed ? await searchPokemon(trimmed) : await getPokemonList(page);
-
-        if (cancelled) return;
-
-        setItems(result.items);
-        setTotalCount(result.totalCount);
-      } catch (err) {
-        if (cancelled) return;
-        setError(err instanceof Error ? err.message : 'Unknown error');
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    };
-
-    void run();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [trimmed, page]);
+  const { data, isFetching, error } = useGetPokemonsQuery({ search: trimmed, page });
+  const items = data?.items ?? [];
+  const totalCount = data?.totalCount ?? 0;
+  const loading = isFetching;
+  const errorMessage = error ? getQueryErrorMessage(error) : null;
 
   if (crash) {
     throw new Error('Test error');
@@ -101,11 +74,11 @@ function Main({ searchTerm }: MainProps) {
   return (
     <main className={className} onClick={handleBackgroundClick}>
       <div className="main__list">
-        {error && <p className="main__error">{error}</p>}
+        {errorMessage && <p className="main__error">{errorMessage}</p>}
 
         {loading && <Loader />}
 
-        {!loading && !error && isEmpty && (
+        {!loading && !errorMessage && isEmpty && (
           <p className="main__placeholder">
             {trimmed ? 'No Pokemon found' : 'No Pokemon available'}
           </p>

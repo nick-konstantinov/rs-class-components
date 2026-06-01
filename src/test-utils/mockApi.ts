@@ -15,9 +15,9 @@ export function makeDetailResponse(
   };
 }
 
-export function makeListResponse(names: string[]): PokemonListResponse {
+export function makeListResponse(names: string[], count = names.length): PokemonListResponse {
   return {
-    count: names.length,
+    count,
     next: null,
     previous: null,
     results: names.map((name) => ({
@@ -40,4 +40,15 @@ export function makeErrorResponse(status: number): Response {
 
 export function requestedUrls(fetchSpy: MockInstance<typeof fetch>): string[] {
   return fetchSpy.mock.calls.map(([input]) => (input as Request).url);
+}
+
+export function mockPokemonFetch(
+  fetchSpy: MockInstance<typeof fetch>,
+  routes: Record<string, () => Response>,
+): void {
+  fetchSpy.mockImplementation((input) => {
+    const url = (input as Request).url;
+    const route = Object.entries(routes).find(([fragment]) => url.includes(fragment));
+    return Promise.resolve(route ? route[1]() : makeErrorResponse(404));
+  });
 }
