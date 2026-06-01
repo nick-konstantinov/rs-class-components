@@ -7,10 +7,10 @@ import Main from './Main';
 import DetailsOutletSlot from '@/components/Details/DetailsOutletSlot';
 import ErrorBoundary from '@/components/ErrorBoundary/ErrorBoundary';
 import {
+  listPageRoutes,
   makeDetailResponse,
   makeErrorResponse,
   makeFetchResponse,
-  makeListResponse,
   mockPokemonFetch,
   requestedUrls,
 } from '@/test-utils/mockApi';
@@ -53,11 +53,7 @@ describe('Main', () => {
   });
 
   it('shows loader on mount and renders the fetched pokemon list', async () => {
-    mockPokemonFetch(fetchSpy, {
-      'offset=0': () => makeFetchResponse(makeListResponse(['pokemon-1', 'pokemon-2'], 60)),
-      'pokemon/pokemon-1': () => makeFetchResponse(makeDetailResponse({ name: 'pokemon-1' })),
-      'pokemon/pokemon-2': () => makeFetchResponse(makeDetailResponse({ name: 'pokemon-2' })),
-    });
+    mockPokemonFetch(fetchSpy, listPageRoutes(['pokemon-1', 'pokemon-2'], { count: 60 }));
 
     renderMain();
 
@@ -68,11 +64,10 @@ describe('Main', () => {
   });
 
   it('reads page from URL and fetches that page', async () => {
-    mockPokemonFetch(fetchSpy, {
-      'offset=40': () => makeFetchResponse(makeListResponse(['pokemon-1', 'pokemon-2'], 60)),
-      'pokemon/pokemon-1': () => makeFetchResponse(makeDetailResponse({ name: 'pokemon-1' })),
-      'pokemon/pokemon-2': () => makeFetchResponse(makeDetailResponse({ name: 'pokemon-2' })),
-    });
+    mockPokemonFetch(
+      fetchSpy,
+      listPageRoutes(['pokemon-1', 'pokemon-2'], { count: 60, offset: 40 }),
+    );
 
     renderMain({ initialPath: '/?page=3' });
 
@@ -95,9 +90,7 @@ describe('Main', () => {
   });
 
   it('shows "No Pokemon available" when list is empty without search term', async () => {
-    mockPokemonFetch(fetchSpy, {
-      'offset=0': () => makeFetchResponse(makeListResponse([], 0)),
-    });
+    mockPokemonFetch(fetchSpy, listPageRoutes([], { count: 0 }));
 
     renderMain();
 
@@ -125,11 +118,7 @@ describe('Main', () => {
   });
 
   it('renders Pagination once items are loaded', async () => {
-    mockPokemonFetch(fetchSpy, {
-      'offset=0': () => makeFetchResponse(makeListResponse(['pokemon-1', 'pokemon-2'], 60)),
-      'pokemon/pokemon-1': () => makeFetchResponse(makeDetailResponse({ name: 'pokemon-1' })),
-      'pokemon/pokemon-2': () => makeFetchResponse(makeDetailResponse({ name: 'pokemon-2' })),
-    });
+    mockPokemonFetch(fetchSpy, listPageRoutes(['pokemon-1', 'pokemon-2'], { count: 60 }));
 
     renderMain();
 
@@ -141,11 +130,8 @@ describe('Main', () => {
   it('refetches and reflects the URL when a page button is clicked', async () => {
     const user = userEvent.setup();
     mockPokemonFetch(fetchSpy, {
-      'offset=0': () => makeFetchResponse(makeListResponse(['pokemon-1', 'pokemon-2'], 60)),
-      'pokemon/pokemon-1': () => makeFetchResponse(makeDetailResponse({ name: 'pokemon-1' })),
-      'pokemon/pokemon-2': () => makeFetchResponse(makeDetailResponse({ name: 'pokemon-2' })),
-      'offset=20': () => makeFetchResponse(makeListResponse(['page2-1'], 60)),
-      'pokemon/page2-1': () => makeFetchResponse(makeDetailResponse({ name: 'page2-1' })),
+      ...listPageRoutes(['pokemon-1', 'pokemon-2'], { count: 60 }),
+      ...listPageRoutes(['page2-1'], { count: 60, offset: 20 }),
     });
 
     renderMain();
@@ -159,9 +145,7 @@ describe('Main', () => {
 
   it('refetches when searchTerm prop changes', async () => {
     mockPokemonFetch(fetchSpy, {
-      'offset=0': () => makeFetchResponse(makeListResponse(['pokemon-1', 'pokemon-2'], 40)),
-      'pokemon/pokemon-1': () => makeFetchResponse(makeDetailResponse({ name: 'pokemon-1' })),
-      'pokemon/pokemon-2': () => makeFetchResponse(makeDetailResponse({ name: 'pokemon-2' })),
+      ...listPageRoutes(['pokemon-1', 'pokemon-2'], { count: 40 }),
       'pokemon/mewtwo': () => makeFetchResponse(makeDetailResponse({ name: 'mewtwo' })),
     });
 
@@ -178,11 +162,7 @@ describe('Main', () => {
 
   it('opens the details panel when a card is clicked', async () => {
     const user = userEvent.setup();
-    mockPokemonFetch(fetchSpy, {
-      'offset=0': () => makeFetchResponse(makeListResponse(['pokemon-1', 'pokemon-2'], 40)),
-      'pokemon/pokemon-1': () => makeFetchResponse(makeDetailResponse({ name: 'pokemon-1' })),
-      'pokemon/pokemon-2': () => makeFetchResponse(makeDetailResponse({ name: 'pokemon-2' })),
-    });
+    mockPokemonFetch(fetchSpy, listPageRoutes(['pokemon-1', 'pokemon-2'], { count: 40 }));
 
     renderMainWithRoutes();
 
@@ -195,11 +175,7 @@ describe('Main', () => {
 
   it('closes the details panel when the main background is clicked', async () => {
     const user = userEvent.setup();
-    mockPokemonFetch(fetchSpy, {
-      'offset=0': () => makeFetchResponse(makeListResponse(['pokemon-1', 'pokemon-2'], 40)),
-      'pokemon/pokemon-1': () => makeFetchResponse(makeDetailResponse({ name: 'pokemon-1' })),
-      'pokemon/pokemon-2': () => makeFetchResponse(makeDetailResponse({ name: 'pokemon-2' })),
-    });
+    mockPokemonFetch(fetchSpy, listPageRoutes(['pokemon-1', 'pokemon-2'], { count: 40 }));
 
     renderMainWithRoutes({ initialPath: '/?page=1&details=pokemon-1' });
 
@@ -212,11 +188,7 @@ describe('Main', () => {
 
   it('closes the details panel when the close button is clicked', async () => {
     const user = userEvent.setup();
-    mockPokemonFetch(fetchSpy, {
-      'offset=0': () => makeFetchResponse(makeListResponse(['pokemon-1', 'pokemon-2'], 40)),
-      'pokemon/pokemon-1': () => makeFetchResponse(makeDetailResponse({ name: 'pokemon-1' })),
-      'pokemon/pokemon-2': () => makeFetchResponse(makeDetailResponse({ name: 'pokemon-2' })),
-    });
+    mockPokemonFetch(fetchSpy, listPageRoutes(['pokemon-1', 'pokemon-2'], { count: 40 }));
 
     renderMainWithRoutes({ initialPath: '/?page=1&details=pokemon-1' });
 
@@ -230,10 +202,7 @@ describe('Main', () => {
   it('triggers an error caught by ErrorBoundary when "Throw test error" is clicked', async () => {
     const user = userEvent.setup();
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    mockPokemonFetch(fetchSpy, {
-      'offset=0': () => makeFetchResponse(makeListResponse(['pokemon-1'], 20)),
-      'pokemon/pokemon-1': () => makeFetchResponse(makeDetailResponse({ name: 'pokemon-1' })),
-    });
+    mockPokemonFetch(fetchSpy, listPageRoutes(['pokemon-1'], { count: 20 }));
 
     render(
       <Provider store={makeStore()}>
@@ -254,11 +223,7 @@ describe('Main', () => {
 
   it('refetches the current page when Refresh is clicked', async () => {
     const user = userEvent.setup();
-    mockPokemonFetch(fetchSpy, {
-      'offset=0': () => makeFetchResponse(makeListResponse(['pokemon-1', 'pokemon-2'], 60)),
-      'pokemon/pokemon-1': () => makeFetchResponse(makeDetailResponse({ name: 'pokemon-1' })),
-      'pokemon/pokemon-2': () => makeFetchResponse(makeDetailResponse({ name: 'pokemon-2' })),
-    });
+    mockPokemonFetch(fetchSpy, listPageRoutes(['pokemon-1', 'pokemon-2'], { count: 60 }));
 
     renderMain();
 
@@ -270,5 +235,28 @@ describe('Main', () => {
     await waitFor(() => {
       expect(fetchSpy.mock.calls.length).toBeGreaterThan(callsBefore);
     });
+  });
+
+  it('serves a revisited page from cache without refetching', async () => {
+    const user = userEvent.setup();
+    mockPokemonFetch(fetchSpy, {
+      ...listPageRoutes(['pokemon-1', 'pokemon-2'], { count: 60 }),
+      ...listPageRoutes(['page2-1'], { count: 60, offset: 20 }),
+    });
+
+    renderMain();
+
+    await screen.findByRole('heading', { name: 'pokemon-1' });
+    const callsAfterPage1 = fetchSpy.mock.calls.length;
+
+    await user.click(screen.getByRole('button', { name: '2' }));
+    await screen.findByRole('heading', { name: 'page2-1' });
+    const callsAfterPage2 = fetchSpy.mock.calls.length;
+    expect(callsAfterPage2).toBeGreaterThan(callsAfterPage1);
+
+    await user.click(screen.getByRole('button', { name: '1' }));
+    await screen.findByRole('heading', { name: 'pokemon-1' });
+
+    expect(fetchSpy.mock.calls.length).toBe(callsAfterPage2);
   });
 });

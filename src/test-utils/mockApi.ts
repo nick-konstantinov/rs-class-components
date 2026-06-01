@@ -52,3 +52,16 @@ export function mockPokemonFetch(
     return Promise.resolve(route ? route[1]() : makeErrorResponse(404));
   });
 }
+
+export function listPageRoutes(
+  names: string[],
+  { count = names.length, offset = 0 }: { count?: number; offset?: number } = {},
+): Record<string, () => Response> {
+  const routes: Record<string, () => Response> = {
+    [`offset=${offset}`]: () => makeFetchResponse(makeListResponse(names, count)),
+  };
+  for (const name of names) {
+    routes[`pokemon/${name}`] = () => makeFetchResponse(makeDetailResponse({ name }));
+  }
+  return routes;
+}

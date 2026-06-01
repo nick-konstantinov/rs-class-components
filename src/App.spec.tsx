@@ -6,9 +6,9 @@ import { Provider } from 'react-redux';
 import App from './App';
 import { SEARCH_TERM_STORAGE_KEY } from './constants';
 import {
+  listPageRoutes,
   makeDetailResponse,
   makeFetchResponse,
-  makeListResponse,
   mockPokemonFetch,
   requestedUrls,
 } from './test-utils/mockApi';
@@ -53,11 +53,7 @@ describe('App', () => {
   });
 
   it('falls back to the default list when localStorage is empty', async () => {
-    mockPokemonFetch(fetchSpy, {
-      'offset=0': () => makeFetchResponse(makeListResponse(['pokemon-1', 'pokemon-2'], 40)),
-      'pokemon/pokemon-1': () => makeFetchResponse(makeDetailResponse({ name: 'pokemon-1' })),
-      'pokemon/pokemon-2': () => makeFetchResponse(makeDetailResponse({ name: 'pokemon-2' })),
-    });
+    mockPokemonFetch(fetchSpy, listPageRoutes(['pokemon-1', 'pokemon-2'], { count: 40 }));
 
     renderApp();
 
@@ -69,9 +65,7 @@ describe('App', () => {
   it('persists and triggers a new search when the user submits the form', async () => {
     const user = userEvent.setup();
     mockPokemonFetch(fetchSpy, {
-      'offset=0': () => makeFetchResponse(makeListResponse(['pokemon-1', 'pokemon-2'], 40)),
-      'pokemon/pokemon-1': () => makeFetchResponse(makeDetailResponse({ name: 'pokemon-1' })),
-      'pokemon/pokemon-2': () => makeFetchResponse(makeDetailResponse({ name: 'pokemon-2' })),
+      ...listPageRoutes(['pokemon-1', 'pokemon-2'], { count: 40 }),
       'pokemon/mewtwo': () => makeFetchResponse(makeDetailResponse({ name: 'mewtwo' })),
     });
 
@@ -88,10 +82,7 @@ describe('App', () => {
   it('shows the ErrorBoundary fallback when Main crashes, while keeping Header alive', async () => {
     const user = userEvent.setup();
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    mockPokemonFetch(fetchSpy, {
-      'offset=0': () => makeFetchResponse(makeListResponse(['pokemon-1'], 20)),
-      'pokemon/pokemon-1': () => makeFetchResponse(makeDetailResponse({ name: 'pokemon-1' })),
-    });
+    mockPokemonFetch(fetchSpy, listPageRoutes(['pokemon-1'], { count: 20 }));
 
     renderApp();
 
