@@ -4,16 +4,26 @@
   border-radius: 8px;
   padding: 12px;
   background-color: var(--bg);
-  cursor: pointer;
 
   &:hover {
     border-color: var(--text-h);
   }
 
-  &:focus {
+  &:focus-within {
     outline: 2px solid var(--accent);
     outline-offset: 2px;
   }
+}
+
+.body {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: inherit;
+  cursor: pointer;
 }
 
 .selected {
@@ -49,6 +59,7 @@
   position: absolute;
   top: 8px;
   left: 8px;
+  z-index: 1;
   display: inline-flex;
   align-items: center;
 
