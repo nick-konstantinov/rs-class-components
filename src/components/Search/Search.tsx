@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { ChangeEvent, SyntheticEvent } from 'react';
-import './Search.css';
+import styles from './Search.module.scss';
+import Button from '@/components/Button/Button';
 
 interface SearchProps {
   initialTerm: string;
@@ -11,33 +12,26 @@ function Search({ initialTerm, onSearch }: SearchProps) {
   const [value, setValue] = useState(initialTerm);
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const next = event.target.value;
-    setValue(next);
-
-    if (next === '') {
-      onSearch('');
-    }
+    setValue(event.target.value);
   };
 
   const handleSubmit = (event: SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const trimmed = value.trim();
-    setValue(trimmed);
-    onSearch(trimmed);
+    onSearch(value.trim());
   };
 
   return (
-    <form className="search" onSubmit={handleSubmit}>
+    <form className={styles.search} onSubmit={handleSubmit}>
       <input
         type="text"
-        className="search__input"
+        className={styles.input}
         placeholder="Search Pokemon by name..."
         value={value}
         onChange={handleChange}
       />
-      <button type="submit" className="search__button">
+      <Button type="submit" variant="primary">
         Search
-      </button>
+      </Button>
     </form>
   );
 }

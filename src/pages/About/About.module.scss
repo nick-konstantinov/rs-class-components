@@ -7,30 +7,30 @@
   text-align: left;
 }
 
-.about__title {
+.title {
   margin: 0 0 1rem;
   color: var(--text-h);
 }
 
-.about__subtitle {
+.subtitle {
   margin: 1.5rem 0 0.5rem;
   color: var(--text-h);
 }
 
-.about__intro {
+.intro {
   margin: 0 0 1rem;
 }
 
-.about__list {
+.list {
   margin: 0;
   padding-left: 1.25rem;
 }
 
-.about__link {
+.link {
   color: var(--accent);
   text-decoration: none;
-}
 
-.about__link:hover {
-  text-decoration: underline;
+  &:hover {
+    text-decoration: underline;
+  }
 }

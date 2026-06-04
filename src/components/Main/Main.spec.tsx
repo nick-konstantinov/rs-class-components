@@ -1,11 +1,13 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
+import { Provider } from 'react-redux';
 import Main from './Main';
 import DetailsOutletSlot from '@/components/Details/DetailsOutletSlot';
 import ErrorBoundary from '@/components/ErrorBoundary/ErrorBoundary';
 import { fetchPokemonDetail, getPokemonList, searchPokemon } from '@/api/pokemon';
 import { makePokemon, makePokemonList } from '@/test-utils/mockPokemon';
+import { makeStore } from '@/test-utils/renderWithStore';
 import { ROUTES } from '@/routes';
 
 vi.mock('@/api/pokemon', () => ({
@@ -21,19 +23,23 @@ const mockedFetchPokemonDetail = vi.mocked(fetchPokemonDetail);
 const renderMain = (props: { searchTerm?: string; initialPath?: string } = {}) =>
   render(<Main searchTerm={props.searchTerm ?? ''} />, {
     wrapper: ({ children }) => (
-      <MemoryRouter initialEntries={[props.initialPath ?? '/']}>{children}</MemoryRouter>
+      <Provider store={makeStore()}>
+        <MemoryRouter initialEntries={[props.initialPath ?? '/']}>{children}</MemoryRouter>
+      </Provider>
     ),
   });
 
 const renderMainWithRoutes = (props: { searchTerm?: string; initialPath?: string } = {}) =>
   render(
-    <MemoryRouter initialEntries={[props.initialPath ?? ROUTES.home]}>
-      <Routes>
-        <Route path={ROUTES.home} element={<Main searchTerm={props.searchTerm ?? ''} />}>
-          <Route index element={<DetailsOutletSlot />} />
-        </Route>
-      </Routes>
-    </MemoryRouter>,
+    <Provider store={makeStore()}>
+      <MemoryRouter initialEntries={[props.initialPath ?? ROUTES.home]}>
+        <Routes>
+          <Route path={ROUTES.home} element={<Main searchTerm={props.searchTerm ?? ''} />}>
+            <Route index element={<DetailsOutletSlot />} />
+          </Route>
+        </Routes>
+      </MemoryRouter>
+    </Provider>,
   );
 
 describe('Main', () => {
@@ -219,11 +225,13 @@ describe('Main', () => {
     });
 
     render(
-      <MemoryRouter>
-        <ErrorBoundary>
-          <Main searchTerm="" />
-        </ErrorBoundary>
-      </MemoryRouter>,
+      <Provider store={makeStore()}>
+        <MemoryRouter>
+          <ErrorBoundary>
+            <Main searchTerm="" />
+          </ErrorBoundary>
+        </MemoryRouter>
+      </Provider>,
     );
 
     await screen.findByRole('heading', { name: 'pokemon-1' });

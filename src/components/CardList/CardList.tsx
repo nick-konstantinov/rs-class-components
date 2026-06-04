@@ -1,4 +1,4 @@
-import './CardList.css';
+import styles from './CardList.module.scss';
 import Card from '@/components/Card/Card';
 import type { PokemonItem } from '@/types/pokemon';
 
@@ -10,7 +10,7 @@ interface CardListProps {
 
 function CardList({ items, onSelectCard, selectedName }: CardListProps) {
   return (
-    <div className="card-list">
+    <div className={styles.list}>
       {items.map((item) => (
         <Card
           key={item.name}

@@ -1,10 +1,13 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter } from 'react-router-dom';
+import { Provider } from 'react-redux';
 import App from './App';
 import { SEARCH_TERM_STORAGE_KEY } from './constants';
 import { getPokemonList, searchPokemon } from './api/pokemon';
 import { makePokemon, makePokemonList } from './test-utils/mockPokemon';
+import { makeStore } from './test-utils/renderWithStore';
+import { ThemeProvider } from './context/ThemeProvider';
 
 vi.mock('./api/pokemon', () => ({
   getPokemonList: vi.fn(),
@@ -17,7 +20,11 @@ const mockedSearchPokemon = vi.mocked(searchPokemon);
 const renderApp = (initialPath = '/') =>
   render(<App />, {
     wrapper: ({ children }) => (
-      <MemoryRouter initialEntries={[initialPath]}>{children}</MemoryRouter>
+      <Provider store={makeStore()}>
+        <ThemeProvider>
+          <MemoryRouter initialEntries={[initialPath]}>{children}</MemoryRouter>
+        </ThemeProvider>
+      </Provider>
     ),
   });
 

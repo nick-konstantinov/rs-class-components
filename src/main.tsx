@@ -1,14 +1,21 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import '@/assets/styles/vars.css';
-import './index.css';
+import { Provider } from 'react-redux';
+import '@/assets/styles/vars.scss';
+import './index.scss';
 import App from './App.tsx';
 import { BrowserRouter } from 'react-router-dom';
+import { store } from './store';
+import { ThemeProvider } from './context/ThemeProvider';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <BrowserRouter basename={import.meta.env.BASE_URL}>
-      <App />
-    </BrowserRouter>
+    <Provider store={store}>
+      <ThemeProvider>
+        <BrowserRouter basename={import.meta.env.BASE_URL}>
+          <App />
+        </BrowserRouter>
+      </ThemeProvider>
+    </Provider>
   </StrictMode>,
 );

@@ -1,0 +1,47 @@
+.header {
+  position: relative;
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--border);
+  text-align: center;
+}
+
+.themeToggle {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.75rem;
+}
+
+.nav {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin: 0.75rem 0;
+}
+
+.navLink {
+  color: inherit;
+  text-decoration: none;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+
+  &:hover {
+    background: var(--border);
+  }
+
+  &[aria-current='page'] {
+    font-weight: 700;
+    text-decoration: underline;
+  }
+}
+
+@media (max-width: 600px) {
+  .themeToggle {
+    position: static;
+    margin-top: 0.5rem;
+  }
+}

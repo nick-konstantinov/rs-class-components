@@ -16,10 +16,8 @@
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
+[data-theme='dark'] #social .button-icon {
+  filter: invert(1) brightness(2);
 }
 
 #root {

@@ -1,13 +1,13 @@
 import { Link } from 'react-router-dom';
 import { ROUTES } from '@/routes';
-import './NotFound.css';
+import styles from './NotFound.module.scss';
 
 function NotFound() {
   return (
-    <section className="not-found">
-      <h2 className="not-found__title">404</h2>
-      <p className="not-found__message">The page you're looking for doesn't exist.</p>
-      <Link to={ROUTES.home} className="not-found__link">
+    <section className={styles.notFound}>
+      <h2 className={styles.title}>404</h2>
+      <p className={styles.message}>The page you're looking for doesn't exist.</p>
+      <Link to={ROUTES.home} className={styles.link}>
         Back home
       </Link>
     </section>

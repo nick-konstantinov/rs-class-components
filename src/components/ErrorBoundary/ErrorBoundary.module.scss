@@ -1,4 +1,4 @@
-.error-boundary {
+.errorBoundary {
   min-height: 300px;
   display: flex;
   flex-direction: column;
@@ -7,22 +7,22 @@
   gap: 12px;
   padding: 20px;
   text-align: center;
+
+  button:hover {
+    opacity: 0.85;
+  }
 }
 
-.error-boundary__text {
+.text {
   color: var(--error);
   margin: 0;
 }
 
-.error-boundary__btn {
+.btn {
   padding: 8px 14px;
   border: none;
   border-radius: 4px;
   background: var(--accent);
   color: white;
   cursor: pointer;
-}
-
-.error-boundary button:hover {
-  opacity: 0.85;
 }

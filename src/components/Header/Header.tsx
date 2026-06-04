@@ -1,5 +1,6 @@
-import './Header.css';
+import styles from './Header.module.scss';
 import Search from '@/components/Search/Search';
+import ThemeToggle from '@/components/ThemeToggle/ThemeToggle';
 import { ROUTES } from '@/routes';
 import { NavLink } from 'react-router-dom';
 
@@ -10,17 +11,18 @@ interface HeaderProps {
 
 function Header({ initialTerm, onSearch }: HeaderProps) {
   return (
-    <header className="header">
-      <h1 className="header__title">Pokemon Search</h1>
-      <nav className="header__nav" aria-label="Main navigation">
-        <NavLink to={ROUTES.home} end className="header__nav-link">
+    <header className={styles.header}>
+      <h1 className={styles.title}>Pokemon Search</h1>
+      <nav className={styles.nav} aria-label="Main navigation">
+        <NavLink to={ROUTES.home} end className={styles.navLink}>
           Home
         </NavLink>
-        <NavLink to={ROUTES.about} className="header__nav-link">
+        <NavLink to={ROUTES.about} className={styles.navLink}>
           About
         </NavLink>
       </nav>
       <Search initialTerm={initialTerm} onSearch={onSearch} />
+      <ThemeToggle className={styles.themeToggle} />
     </header>
   );
 }

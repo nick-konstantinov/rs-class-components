@@ -1,0 +1,37 @@
+.flyout {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 12px 16px;
+  padding: 12px 16px;
+  background: var(--bg);
+  border-top: 1px solid var(--border);
+  box-shadow: var(--shadow);
+}
+
+.count {
+  font-weight: 500;
+  color: var(--text-h);
+}
+
+.countNumber {
+  font-weight: 700;
+  color: var(--accent);
+}
+
+@media (max-width: 450px) {
+  .flyout {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .count {
+    text-align: center;
+  }
+}
