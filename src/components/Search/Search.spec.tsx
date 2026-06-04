@@ -29,7 +29,6 @@ describe('Search', () => {
 
     expect(onSearch).toHaveBeenCalledTimes(1);
     expect(onSearch).toHaveBeenCalledWith('pikachu');
-    expect(screen.getByRole('textbox')).toHaveValue('pikachu');
   });
 
   it('submits via the Search button as well', async () => {

@@ -17,9 +17,7 @@ function Search({ initialTerm, onSearch }: SearchProps) {
 
   const handleSubmit = (event: SyntheticEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const trimmed = value.trim();
-    setValue(trimmed);
-    onSearch(trimmed);
+    onSearch(value.trim());
   };
 
   return (
