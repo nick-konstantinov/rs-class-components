@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import styles from './ThemeToggle.module.scss';
-import { useTheme } from '../../context/themeContext';
+import { useTheme } from '@/context/themeContext';
 
 interface ThemeToggleProps {
   className?: string;

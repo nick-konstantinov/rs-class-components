@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { downloadCsv, itemsToCsv } from './csv';
-import { makePokemon } from '../test-utils/mockPokemon';
+import { makePokemon } from '@/test-utils/mockPokemon';
 
 describe('itemsToCsv', () => {
   it('returns only the header for an empty array', () => {

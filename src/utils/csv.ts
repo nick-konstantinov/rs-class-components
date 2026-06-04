@@ -1,4 +1,4 @@
-import type { PokemonItem } from '../types/pokemon';
+import type { PokemonItem } from '@/types/pokemon';
 
 const HEADERS = ['#', 'Name', 'Types', 'Abilities', 'Height', 'Weight', 'Sprite'] as const;
 

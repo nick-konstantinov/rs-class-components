@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import reducer, { toggleSelected, unselectAll } from './selectedItemsSlice';
-import { makePokemon } from '../../test-utils/mockPokemon';
+import { makePokemon } from '@/test-utils/mockPokemon';
 
 describe('selectedItemsSlice', () => {
   it('initial state has empty byName', () => {

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo } from 'react';
 import type { PropsWithChildren } from 'react';
-import { useLocalStorage } from '../hooks/useLocalStorage';
+import { useLocalStorage } from '@/hooks/useLocalStorage';
 import { ThemeContext, type Theme } from './themeContext';
 
 export function ThemeProvider({ children }: PropsWithChildren) {

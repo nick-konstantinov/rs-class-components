@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import Header from './Header';
 import { MemoryRouter } from 'react-router-dom';
-import { ThemeProvider } from '../../context/ThemeProvider';
+import { ThemeProvider } from '@/context/ThemeProvider';
 
 const renderHeader = (
   props: {

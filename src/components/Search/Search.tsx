@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { ChangeEvent, SyntheticEvent } from 'react';
 import styles from './Search.module.scss';
-import Button from '../Button/Button';
+import Button from '@/components/Button/Button';
 
 interface SearchProps {
   initialTerm: string;

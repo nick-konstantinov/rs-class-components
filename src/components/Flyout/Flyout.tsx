@@ -1,17 +1,13 @@
 import styles from './Flyout.module.scss';
-import Button from '../Button/Button';
-import { useAppDispatch, useAppSelector } from '../../store/hooks';
-import {
-  selectSelectedCount,
-  selectSelectedList,
-  unselectAll,
-} from '../../store/slices/selectedItemsSlice';
-import { downloadCsv } from '../../utils/csv';
+import Button from '@/components/Button/Button';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { selectItemsCount, selectItems, unselectAll } from '@/store/slices/selectedItemsSlice';
+import { downloadCsv } from '@/utils/csv';
 
 function Flyout() {
   const dispatch = useAppDispatch();
-  const count = useAppSelector(selectSelectedCount);
-  const selected = useAppSelector(selectSelectedList);
+  const count = useAppSelector(selectItemsCount);
+  const selected = useAppSelector(selectItems);
 
   if (count === 0) return null;
 

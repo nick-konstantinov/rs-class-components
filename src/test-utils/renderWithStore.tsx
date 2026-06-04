@@ -2,8 +2,8 @@ import type { PropsWithChildren, ReactElement } from 'react';
 import { render, type RenderOptions } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
-import selectedItemsReducer, { toggleSelected } from '../store/slices/selectedItemsSlice';
-import type { PokemonItem } from '../types/pokemon';
+import selectedItemsReducer, { toggleSelected } from '@/store/slices/selectedItemsSlice';
+import type { PokemonItem } from '@/types/pokemon';
 
 export function makeStore(preselected: PokemonItem[] = []) {
   const store = configureStore({ reducer: { selectedItems: selectedItemsReducer } });
