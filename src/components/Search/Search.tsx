@@ -12,12 +12,7 @@ function Search({ initialTerm, onSearch }: SearchProps) {
   const [value, setValue] = useState(initialTerm);
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const next = event.target.value;
-    setValue(next);
-
-    if (next === '') {
-      onSearch('');
-    }
+    setValue(event.target.value);
   };
 
   const handleSubmit = (event: SyntheticEvent<HTMLFormElement>) => {

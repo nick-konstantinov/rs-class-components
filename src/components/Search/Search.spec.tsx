@@ -19,19 +19,6 @@ describe('Search', () => {
     expect(input).toHaveValue('pika');
   });
 
-  it('fires onSearch("") when input is cleared', async () => {
-    const user = userEvent.setup();
-    const onSearch = vi.fn();
-
-    render(<Search initialTerm="pikachu" onSearch={onSearch} />);
-
-    const input = screen.getByRole('textbox');
-    await user.clear(input);
-
-    expect(input).toHaveValue('');
-    expect(onSearch).toHaveBeenCalledWith('');
-  });
-
   it('trims and notifies onSearch when the user submits via Enter', async () => {
     const user = userEvent.setup();
     const onSearch = vi.fn();
