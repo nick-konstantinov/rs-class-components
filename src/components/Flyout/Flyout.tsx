@@ -1,4 +1,4 @@
-import './Flyout.css';
+import styles from './Flyout.module.scss';
 import Button from '../Button/Button';
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import {
@@ -24,10 +24,10 @@ function Flyout() {
   };
 
   return (
-    <aside className="flyout" role="region" aria-label="Selection">
-      <span className="flyout__count">
-        <span className="flyout__count-number">{count}</span>{' '}
-        {count === 1 ? 'item is' : 'items are'} selected
+    <aside className={styles.flyout} role="region" aria-label="Selection">
+      <span className={styles.count}>
+        <span className={styles.countNumber}>{count}</span> {count === 1 ? 'item is' : 'items are'}{' '}
+        selected
       </span>
       <Button onClick={handleUnselectAll}>Unselect all</Button>
       <Button variant="primary" onClick={handleDownload}>

@@ -1,4 +1,4 @@
-import './Pagination.css';
+import styles from './Pagination.module.scss';
 
 interface PaginationProps {
   currentPage: number;
@@ -46,10 +46,10 @@ function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) 
   const canNext = currentPage < totalPages;
 
   return (
-    <nav className="pagination" aria-label="Pagination">
+    <nav className={styles.pagination} aria-label="Pagination">
       <button
         type="button"
-        className="pagination__nav"
+        className={styles.nav}
         onClick={() => onPageChange(currentPage - 1)}
         disabled={!canPrev}
         aria-label="Previous page"
@@ -59,14 +59,14 @@ function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) 
 
       {items.map((item, idx) =>
         item === 'ellipsis' ? (
-          <span key={`ellipsis-${idx}`} className="pagination__ellipsis" aria-hidden="true">
+          <span key={`ellipsis-${idx}`} className={styles.ellipsis} aria-hidden="true">
             …
           </span>
         ) : (
           <button
             type="button"
             key={item}
-            className="pagination__page"
+            className={styles.page}
             onClick={() => onPageChange(item)}
             aria-current={item === currentPage ? 'page' : undefined}
             disabled={item === currentPage}
@@ -78,7 +78,7 @@ function Pagination({ currentPage, totalPages, onPageChange }: PaginationProps) 
 
       <button
         type="button"
-        className="pagination__nav"
+        className={styles.nav}
         onClick={() => onPageChange(currentPage + 1)}
         disabled={!canNext}
         aria-label="Next page"

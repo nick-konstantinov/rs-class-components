@@ -1,5 +1,5 @@
 import type { KeyboardEvent, MouseEvent } from 'react';
-import './Card.css';
+import styles from './Card.module.scss';
 import placeholderSprite from '@/assets/images/pokemon-placeholder.svg';
 import type { PokemonItem } from '@/types/pokemon';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
@@ -34,7 +34,7 @@ function Card({ item, onSelect, isSelected }: CardProps) {
     dispatch(toggleSelected(item));
   };
 
-  const className = isSelected ? 'card card--selected' : 'card';
+  const className = isSelected ? `${styles.card} ${styles.selected}` : styles.card;
 
   return (
     <div
@@ -45,7 +45,7 @@ function Card({ item, onSelect, isSelected }: CardProps) {
       onKeyDown={handleKeyDown}
       aria-current={isSelected ? 'true' : undefined}
     >
-      <label className="card__checkbox" onClick={handleCheckboxClick}>
+      <label className={styles.checkbox} onClick={handleCheckboxClick}>
         <input
           type="checkbox"
           checked={isChecked}
@@ -54,11 +54,11 @@ function Card({ item, onSelect, isSelected }: CardProps) {
         />
       </label>
 
-      <img src={item.sprite ?? placeholderSprite} alt={item.name} className="card__image" />
+      <img src={item.sprite ?? placeholderSprite} alt={item.name} className={styles.image} />
 
-      <h3 className="card__title">{item.name}</h3>
+      <h3 className={styles.title}>{item.name}</h3>
 
-      <p className="card__description">
+      <p className={styles.description}>
         <span>
           <strong>Types:</strong>
           {item.types}

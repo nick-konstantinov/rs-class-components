@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { ChangeEvent, SyntheticEvent } from 'react';
-import './Search.css';
+import styles from './Search.module.scss';
 import Button from '../Button/Button';
 
 interface SearchProps {
@@ -28,10 +28,10 @@ function Search({ initialTerm, onSearch }: SearchProps) {
   };
 
   return (
-    <form className="search" onSubmit={handleSubmit}>
+    <form className={styles.search} onSubmit={handleSubmit}>
       <input
         type="text"
-        className="search__input"
+        className={styles.input}
         placeholder="Search Pokemon by name..."
         value={value}
         onChange={handleChange}

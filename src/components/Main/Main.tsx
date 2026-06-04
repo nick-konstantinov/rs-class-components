@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { MouseEvent } from 'react';
 import { Outlet, useSearchParams } from 'react-router-dom';
-import './Main.css';
+import styles from './Main.module.scss';
 import Loader from '@/components/Loader/Loader';
 import CardList from '@/components/CardList/CardList';
 import Pagination from '@/components/Pagination/Pagination';
@@ -96,17 +96,17 @@ function Main({ searchTerm }: MainProps) {
     setSearchParams(next, { replace: true });
   };
 
-  const className = selectedName ? 'main main--split' : 'main';
+  const className = selectedName ? `${styles.main} ${styles.split}` : styles.main;
 
   return (
     <main className={className} onClick={handleBackgroundClick}>
-      <div className="main__list">
-        {error && <p className="main__error">{error}</p>}
+      <div className={styles.list}>
+        {error && <p className={styles.error}>{error}</p>}
 
         {loading && <Loader />}
 
         {!loading && !error && isEmpty && (
-          <p className="main__placeholder">
+          <p className={styles.placeholder}>
             {trimmed ? 'No Pokemon found' : 'No Pokemon available'}
           </p>
         )}
@@ -122,9 +122,9 @@ function Main({ searchTerm }: MainProps) {
           </>
         )}
 
-        <div className="main__controls">
+        <div className={styles.controls}>
           {!loading && (
-            <button onClick={() => setCrash(true)} className="main__error-btn">
+            <button onClick={() => setCrash(true)} className={styles.errorBtn}>
               Throw test error
             </button>
           )}

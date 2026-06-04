@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import './Details.css';
+import styles from './Details.module.scss';
 import Loader from '@/components/Loader/Loader';
 import placeholderSprite from '@/assets/images/pokemon-placeholder.svg';
 import { fetchPokemonDetail } from '@/api/pokemon';
@@ -44,23 +44,18 @@ function Details({ name, onClose }: DetailsProps) {
   }, [name]);
 
   return (
-    <aside className="details" aria-label="Pokemon details">
-      <button
-        type="button"
-        className="details__close"
-        onClick={onClose}
-        aria-label="Close details"
-      />
+    <aside className={styles.details} aria-label="Pokemon details">
+      <button type="button" className={styles.close} onClick={onClose} aria-label="Close details" />
 
       {loading && <Loader />}
 
-      {error && <p className="details__error">{error}</p>}
+      {error && <p className={styles.error}>{error}</p>}
 
       {data && (
-        <div className="details__content">
-          <h2 className="details__title">{data.name}</h2>
-          <img src={data.sprite ?? placeholderSprite} alt={data.name} className="details__image" />
-          <dl className="details__list">
+        <div className={styles.content}>
+          <h2 className={styles.title}>{data.name}</h2>
+          <img src={data.sprite ?? placeholderSprite} alt={data.name} className={styles.image} />
+          <dl className={styles.list}>
             <dt>Types</dt>
             <dd>{data.types}</dd>
             <dt>Abilities</dt>
