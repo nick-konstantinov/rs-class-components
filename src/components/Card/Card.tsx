@@ -1,4 +1,5 @@
 import type { KeyboardEvent, MouseEvent } from 'react';
+import clsx from 'clsx';
 import styles from './Card.module.scss';
 import placeholderSprite from '@/assets/images/pokemon-placeholder.svg';
 import type { PokemonItem } from '@/types/pokemon';
@@ -34,7 +35,7 @@ function Card({ item, onSelect, isSelected }: CardProps) {
     dispatch(toggleSelected(item));
   };
 
-  const className = isSelected ? `${styles.card} ${styles.selected}` : styles.card;
+  const className = clsx(styles.card, { [styles.selected]: isSelected });
 
   return (
     <div

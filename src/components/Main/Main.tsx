@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { MouseEvent } from 'react';
 import { Outlet, useSearchParams } from 'react-router-dom';
+import clsx from 'clsx';
 import styles from './Main.module.scss';
 import Loader from '@/components/Loader/Loader';
 import CardList from '@/components/CardList/CardList';
@@ -96,7 +97,7 @@ function Main({ searchTerm }: MainProps) {
     setSearchParams(next, { replace: true });
   };
 
-  const className = selectedName ? `${styles.main} ${styles.split}` : styles.main;
+  const className = clsx(styles.main, { [styles.split]: selectedName });
 
   return (
     <main className={className} onClick={handleBackgroundClick}>
