@@ -1,0 +1,60 @@
+@use 'styles/variables' as vars;
+
+.page {
+  max-width: vars.$max-width;
+  margin: 0 auto;
+  padding: 2.5rem 1rem;
+}
+
+.header {
+  margin-bottom: 2.5rem;
+  text-align: center;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: vars.$color-text;
+}
+
+.subtitle {
+  margin: vars.$space-sm 0 0;
+  color: vars.$color-text-muted;
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: vars.$space-md;
+  margin-bottom: 3rem;
+}
+
+.sectionTitle {
+  margin: 0 0 vars.$space-md;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: vars.$color-text;
+}
+
+.empty {
+  color: vars.$color-text-muted;
+}
+
+.placeholder {
+  margin-top: vars.$space-lg;
+  padding: 1.5rem;
+  border: 1px dashed vars.$color-border;
+  border-radius: vars.$radius;
+  text-align: center;
+}
+
+.placeholderText {
+  margin: 0;
+  color: vars.$color-text;
+}
+
+.placeholderClose {
+  margin-top: vars.$space-md;
+}
