@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import Button from '@/components/Button/Button';
+import Modal from '@/components/Modal/Modal';
 import styles from './MainPage.module.scss';
 
 type OpenForm = 'rhf' | 'uncontrolled' | null;
 
 export default function MainPage() {
   const [openForm, setOpenForm] = useState<OpenForm>(null);
+
+  const closeForm = () => setOpenForm(null);
 
   return (
     <main className={styles.page}>
@@ -30,20 +33,13 @@ export default function MainPage() {
         <p className={styles.empty}>No submissions yet.</p>
       </section>
 
-      {openForm && (
-        <div className={styles.placeholder}>
-          <p className={styles.placeholderText}>
-            Placeholder for the <span>{openForm}</span> form.
-          </p>
-          <Button
-            variant="secondary"
-            className={styles.placeholderClose}
-            onClick={() => setOpenForm(null)}
-          >
-            Close
-          </Button>
-        </div>
-      )}
+      <Modal
+        isOpen={openForm !== null}
+        onClose={closeForm}
+        title={openForm === 'rhf' ? 'React Hook Form' : 'Uncontrolled form'}
+      >
+        <p>Placeholder for the {openForm} form.</p>
+      </Modal>
     </main>
   );
 }
