@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import Button from '@/components/Button/Button';
 import Modal from '@/components/Modal/Modal';
+import RhfForm from '@/components/RhfForm/RhfForm';
 import styles from './MainPage.module.scss';
 
 type OpenForm = 'rhf' | 'uncontrolled' | null;
@@ -38,7 +39,11 @@ export default function MainPage() {
         onClose={closeForm}
         title={openForm === 'rhf' ? 'React Hook Form' : 'Uncontrolled form'}
       >
-        <p>Placeholder for the {openForm} form.</p>
+        {openForm === 'rhf' ? (
+          <RhfForm onSuccess={closeForm} />
+        ) : (
+          <p>Placeholder for the uncontrolled form.</p>
+        )}
       </Modal>
     </main>
   );

@@ -26,7 +26,7 @@
   align-items: center;
   justify-content: space-between;
   gap: vars.$space-md;
-  padding: vars.$space-md;
+  padding: vars.$space-md vars.$space-md vars.$space-md vars.$space-lg;
   border-bottom: 1px solid vars.$color-border;
 }
 

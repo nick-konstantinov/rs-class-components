@@ -1,0 +1,64 @@
+@use 'styles/variables' as vars;
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.field {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: vars.$space-xs;
+  margin: 0 0 0.75rem;
+  padding: 0;
+  border: none;
+  min-inline-size: 0;
+}
+
+.label {
+  padding: 0;
+  font-weight: 500;
+  color: vars.$color-text;
+}
+
+.input {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid vars.$color-border;
+  border-radius: vars.$radius;
+  background: vars.$color-surface;
+  color: vars.$color-text;
+
+  &:focus {
+    outline: 2px solid vars.$color-primary;
+    outline-offset: 1px;
+  }
+}
+
+.radios {
+  display: flex;
+  gap: vars.$space-md;
+}
+
+.radio,
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: vars.$space-xs;
+  color: vars.$color-text;
+}
+
+.radio input,
+.checkbox input {
+  accent-color: vars.$color-accent;
+}
+
+.error {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.1;
+  color: vars.$color-danger;
+}
