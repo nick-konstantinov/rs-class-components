@@ -3,6 +3,7 @@ import { fileURLToPath, URL } from 'node:url';
 import react from '@vitejs/plugin-react';
 
 export default defineConfig({
+  base: '/rs-class-components/',
   plugins: [react()],
   resolve: {
     alias: {
