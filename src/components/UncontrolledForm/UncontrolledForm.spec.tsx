@@ -1,4 +1,4 @@
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { renderWithStore } from '@/test-utils/renderWithStore';
 import UncontrolledForm from './UncontrolledForm';
@@ -66,7 +66,7 @@ describe('UncontrolledForm', () => {
     await fillValidForm(user);
     await user.click(screen.getByRole('button', { name: /submit/i }));
 
-    expect(onSuccess).toHaveBeenCalledOnce();
+    await waitFor(() => expect(onSuccess).toHaveBeenCalledOnce());
 
     const items = store.getState().submissions.items;
     expect(items).toHaveLength(1);
@@ -78,7 +78,7 @@ describe('UncontrolledForm', () => {
       gender: 'male',
       country: 'Canada',
       terms: true,
-      image: null,
     });
+    expect(items[0].image).toMatch(/^data:image\/png/);
   });
 });

@@ -68,7 +68,7 @@ describe('RhfForm', () => {
     await waitFor(() => expect(screen.getByRole('button', { name: /submit/i })).toBeEnabled());
     await user.click(screen.getByRole('button', { name: /submit/i }));
 
-    expect(onSuccess).toHaveBeenCalledOnce();
+    await waitFor(() => expect(onSuccess).toHaveBeenCalledOnce());
 
     const items = store.getState().submissions.items;
     expect(items).toHaveLength(1);
@@ -80,7 +80,7 @@ describe('RhfForm', () => {
       gender: 'female',
       country: 'Canada',
       terms: true,
-      image: null,
     });
+    expect(items[0].image).toMatch(/^data:image\/png/);
   });
 });

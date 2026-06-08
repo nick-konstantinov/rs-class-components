@@ -1,10 +1,12 @@
 import { useState, type FormEvent } from 'react';
 import clsx from 'clsx';
 import Button from '@/components/Button/Button';
+import PasswordStrengthMeter from '@/components/PasswordStrengthMeter/PasswordStrengthMeter';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { addSubmission } from '@/store/submissionsSlice';
 import { selectCountries } from '@/store/countriesSlice';
 import { formSchema } from '@/validation/schema';
+import { fileToBase64 } from '@/utils/file';
 import styles from '@/styles/form.module.scss';
 
 interface UncontrolledFormProps {
@@ -17,13 +19,15 @@ export default function UncontrolledForm({ onSuccess }: UncontrolledFormProps) {
   const dispatch = useAppDispatch();
   const countries = useAppSelector(selectCountries);
   const [errors, setErrors] = useState<FieldErrors>({});
+  const [password, setPassword] = useState('');
 
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const form = event.currentTarget;
     const data = new FormData(form);
     const imageInput = form.elements.namedItem('image');
-    const image = imageInput instanceof HTMLInputElement ? (imageInput.files?.[0] ?? null) : null;
+    const imageFile =
+      imageInput instanceof HTMLInputElement ? (imageInput.files?.[0] ?? null) : null;
 
     const result = formSchema.safeParse({
       name: String(data.get('name') ?? ''),
@@ -34,7 +38,7 @@ export default function UncontrolledForm({ onSuccess }: UncontrolledFormProps) {
       gender: String(data.get('gender') ?? ''),
       terms: data.get('terms') === 'on',
       country: String(data.get('country') ?? ''),
-      image,
+      image: imageFile,
     });
 
     if (!result.success) {
@@ -50,6 +54,7 @@ export default function UncontrolledForm({ onSuccess }: UncontrolledFormProps) {
     }
 
     setErrors({});
+    const image = await fileToBase64(result.data.image);
     dispatch(
       addSubmission({
         source: 'uncontrolled',
@@ -59,11 +64,12 @@ export default function UncontrolledForm({ onSuccess }: UncontrolledFormProps) {
         gender: result.data.gender,
         terms: result.data.terms,
         country: result.data.country,
-        image: null,
+        image,
       }),
     );
 
     form.reset();
+    setPassword('');
     onSuccess();
   };
 
@@ -107,7 +113,9 @@ export default function UncontrolledForm({ onSuccess }: UncontrolledFormProps) {
           name="password"
           type="password"
           aria-invalid={errors.password ? true : undefined}
+          onChange={(event) => setPassword(event.target.value)}
         />
+        <PasswordStrengthMeter password={password} />
         <p className={styles.error}>{errors.password}</p>
       </div>
 

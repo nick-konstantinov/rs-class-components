@@ -1,11 +1,13 @@
-import { Controller, useForm, type SubmitHandler } from 'react-hook-form';
+import { Controller, useForm, useWatch, type SubmitHandler } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Button from '@/components/Button/Button';
 import CountryAutocomplete from '@/components/CountryAutocomplete/CountryAutocomplete';
+import PasswordStrengthMeter from '@/components/PasswordStrengthMeter/PasswordStrengthMeter';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { addSubmission } from '@/store/submissionsSlice';
 import { selectCountries } from '@/store/countriesSlice';
 import { formSchema, type FormValues } from '@/validation/schema';
+import { fileToBase64 } from '@/utils/file';
 import styles from '@/styles/form.module.scss';
 
 interface RhfFormProps {
@@ -27,7 +29,10 @@ export default function RhfForm({ onSuccess }: RhfFormProps) {
     mode: 'onTouched',
   });
 
-  const onSubmit: SubmitHandler<FormValues> = (values) => {
+  const passwordValue = useWatch({ control, name: 'password' }) ?? '';
+
+  const onSubmit: SubmitHandler<FormValues> = async (values) => {
+    const image = await fileToBase64(values.image);
     dispatch(
       addSubmission({
         source: 'rhf',
@@ -37,7 +42,7 @@ export default function RhfForm({ onSuccess }: RhfFormProps) {
         gender: values.gender,
         terms: values.terms,
         country: values.country,
-        image: null,
+        image,
       }),
     );
     reset();
@@ -85,6 +90,7 @@ export default function RhfForm({ onSuccess }: RhfFormProps) {
           aria-invalid={errors.password ? true : undefined}
           {...register('password')}
         />
+        <PasswordStrengthMeter password={passwordValue} />
         <p className={styles.error}>{errors.password?.message}</p>
       </div>
 
