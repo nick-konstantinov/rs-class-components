@@ -4,7 +4,7 @@ import CountryAutocomplete from '@/components/CountryAutocomplete/CountryAutocom
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { addSubmission } from '@/store/submissionsSlice';
 import { selectCountries } from '@/store/countriesSlice';
-import styles from './RhfForm.module.scss';
+import styles from '@/styles/form.module.scss';
 
 interface RhfFormProps {
   onSuccess: () => void;

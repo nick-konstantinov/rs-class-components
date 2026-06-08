@@ -1,10 +1,11 @@
-import { render, screen } from '@testing-library/react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { renderWithStore } from '@/test-utils/renderWithStore';
 import MainPage from './MainPage';
 
 describe('MainPage', () => {
   it('renders the heading and both form buttons', () => {
-    render(<MainPage />);
+    renderWithStore(<MainPage />);
 
     expect(screen.getByRole('heading', { name: /react forms/i, level: 1 })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: /uncontrolled form/i })).toBeInTheDocument();
@@ -13,7 +14,7 @@ describe('MainPage', () => {
 
   it('opens a form modal on button click and closes it', async () => {
     const user = userEvent.setup();
-    render(<MainPage />);
+    renderWithStore(<MainPage />);
 
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 

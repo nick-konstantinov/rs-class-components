@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Button from '@/components/Button/Button';
 import Modal from '@/components/Modal/Modal';
 import RhfForm from '@/components/RhfForm/RhfForm';
+import UncontrolledForm from '@/components/UncontrolledForm/UncontrolledForm';
 import styles from './MainPage.module.scss';
 
 type OpenForm = 'rhf' | 'uncontrolled' | null;
@@ -42,7 +43,7 @@ export default function MainPage() {
         {openForm === 'rhf' ? (
           <RhfForm onSuccess={closeForm} />
         ) : (
-          <p>Placeholder for the uncontrolled form.</p>
+          <UncontrolledForm onSuccess={closeForm} />
         )}
       </Modal>
     </main>

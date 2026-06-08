@@ -3,6 +3,11 @@
 .form {
   display: flex;
   flex-direction: column;
+  accent-color: vars.$color-accent;
+}
+
+.primaryAccent {
+  accent-color: vars.$color-primary;
 }
 
 .field {
@@ -46,11 +51,6 @@
   align-items: center;
   gap: vars.$space-xs;
   color: vars.$color-text;
-}
-
-.radio input,
-.checkbox input {
-  accent-color: vars.$color-accent;
 }
 
 .error {
