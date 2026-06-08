@@ -3,6 +3,23 @@ import userEvent from '@testing-library/user-event';
 import { renderWithStore } from '@/test-utils/renderWithStore';
 import UncontrolledForm from './UncontrolledForm';
 
+type User = ReturnType<typeof userEvent.setup>;
+
+async function fillValidForm(user: User) {
+  await user.type(screen.getByLabelText('Name'), 'Bob');
+  await user.type(screen.getByLabelText('Email'), 'bob@mail.com');
+  await user.type(screen.getByLabelText('Password'), 'Abcdef1!');
+  await user.type(screen.getByLabelText('Confirm password'), 'Abcdef1!');
+  await user.type(screen.getByLabelText('Country'), 'Canada');
+  await user.type(screen.getByLabelText('Age'), '25');
+  await user.click(screen.getByLabelText('Male'));
+  await user.upload(
+    screen.getByLabelText('Profile image'),
+    new File(['x'], 'avatar.png', { type: 'image/png' }),
+  );
+  await user.click(screen.getByLabelText(/terms and conditions/i));
+}
+
 describe('UncontrolledForm', () => {
   it('renders all fields', () => {
     renderWithStore(<UncontrolledForm onSuccess={vi.fn()} />);
@@ -20,18 +37,33 @@ describe('UncontrolledForm', () => {
     expect(screen.getByRole('button', { name: /submit/i })).toBeInTheDocument();
   });
 
-  it('dispatches a submission and calls onSuccess', async () => {
+  it('does not validate while typing (only on submit)', async () => {
+    const user = userEvent.setup();
+    renderWithStore(<UncontrolledForm onSuccess={vi.fn()} />);
+
+    await user.type(screen.getByLabelText('Email'), 'not-an-email');
+
+    expect(screen.queryByText(/invalid email/i)).not.toBeInTheDocument();
+  });
+
+  it('shows errors and does not dispatch on an invalid submit', async () => {
     const user = userEvent.setup();
     const onSuccess = vi.fn();
     const { store } = renderWithStore(<UncontrolledForm onSuccess={onSuccess} />);
 
-    await user.type(screen.getByLabelText('Name'), 'Bob');
-    await user.type(screen.getByLabelText('Email'), 'bob@mail.com');
-    await user.type(screen.getByLabelText('Age'), '25');
-    await user.click(screen.getByLabelText('Male'));
-    await user.type(screen.getByLabelText('Country'), 'Japan');
-    await user.click(screen.getByLabelText(/terms and conditions/i));
+    await user.click(screen.getByRole('button', { name: /submit/i }));
 
+    expect(await screen.findByText(/name is required/i)).toBeInTheDocument();
+    expect(onSuccess).not.toHaveBeenCalled();
+    expect(store.getState().submissions.items).toHaveLength(0);
+  });
+
+  it('dispatches a submission and calls onSuccess on a valid submit', async () => {
+    const user = userEvent.setup();
+    const onSuccess = vi.fn();
+    const { store } = renderWithStore(<UncontrolledForm onSuccess={onSuccess} />);
+
+    await fillValidForm(user);
     await user.click(screen.getByRole('button', { name: /submit/i }));
 
     expect(onSuccess).toHaveBeenCalledOnce();
@@ -44,7 +76,7 @@ describe('UncontrolledForm', () => {
       age: 25,
       email: 'bob@mail.com',
       gender: 'male',
-      country: 'Japan',
+      country: 'Canada',
       terms: true,
       image: null,
     });

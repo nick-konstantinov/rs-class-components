@@ -15,7 +15,7 @@
   display: flex;
   flex-direction: column;
   gap: vars.$space-xs;
-  margin: 0 0 0.75rem;
+  margin-bottom: 0.85rem;
   padding: 0;
   border: none;
   min-inline-size: 0;
@@ -38,6 +38,14 @@
     outline: 2px solid vars.$color-primary;
     outline-offset: 1px;
   }
+
+  &[aria-invalid='true'] {
+    border-color: vars.$color-danger;
+
+    &:focus {
+      outline-color: vars.$color-danger;
+    }
+  }
 }
 
 .radios {
@@ -55,7 +63,7 @@
 
 .error {
   position: absolute;
-  top: 100%;
+  bottom: -25%;
   left: 0;
   margin: 0;
   font-size: 0.8125rem;

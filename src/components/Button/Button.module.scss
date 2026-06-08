@@ -10,6 +10,11 @@
   font-weight: 500;
   color: #fff;
   transition: background-color 0.2s;
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
 }
 
 .primary {

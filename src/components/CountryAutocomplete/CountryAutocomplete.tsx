@@ -9,6 +9,7 @@ interface CountryAutocompleteProps {
   onBlur?: () => void;
   countries: string[];
   className?: string;
+  invalid?: boolean;
 }
 
 export default function CountryAutocomplete({
@@ -18,6 +19,7 @@ export default function CountryAutocomplete({
   onBlur,
   countries,
   className,
+  invalid = false,
 }: CountryAutocompleteProps) {
   const [open, setOpen] = useState(false);
   const listId = useId();
@@ -42,6 +44,7 @@ export default function CountryAutocomplete({
         role="combobox"
         aria-expanded={open}
         aria-controls={listId}
+        aria-invalid={invalid || undefined}
         autoComplete="off"
         value={value}
         onChange={(event) => {
