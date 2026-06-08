@@ -3,12 +3,17 @@ import Button from '@/components/Button/Button';
 import Modal from '@/components/Modal/Modal';
 import RhfForm from '@/components/RhfForm/RhfForm';
 import UncontrolledForm from '@/components/UncontrolledForm/UncontrolledForm';
+import SubmissionCard from '@/components/SubmissionCard/SubmissionCard';
+import { useAppSelector } from '@/store/hooks';
+import { selectSubmissions, selectLastAddedId } from '@/store/submissionsSlice';
 import styles from './MainPage.module.scss';
 
 type OpenForm = 'rhf' | 'uncontrolled' | null;
 
 export default function MainPage() {
   const [openForm, setOpenForm] = useState<OpenForm>(null);
+  const submissions = useAppSelector(selectSubmissions);
+  const lastAddedId = useAppSelector(selectLastAddedId);
 
   const closeForm = () => setOpenForm(null);
 
@@ -32,7 +37,20 @@ export default function MainPage() {
 
       <section>
         <h2 className={styles.sectionTitle}>Submissions</h2>
-        <p className={styles.empty}>No submissions yet.</p>
+        {submissions.length === 0 ? (
+          <p className={styles.empty}>No submissions yet.</p>
+        ) : (
+          <ul className={styles.grid}>
+            {submissions.map((submission) => (
+              <li key={submission.id} className={styles.gridItem}>
+                <SubmissionCard
+                  submission={submission}
+                  highlighted={submission.id === lastAddedId}
+                />
+              </li>
+            ))}
+          </ul>
+        )}
       </section>
 
       <Modal

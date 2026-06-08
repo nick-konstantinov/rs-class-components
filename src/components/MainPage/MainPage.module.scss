@@ -41,3 +41,16 @@
 .empty {
   color: vars.$color-text-muted;
 }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: vars.$space-md;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.gridItem {
+  display: flex;
+}
