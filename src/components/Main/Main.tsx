@@ -44,7 +44,6 @@ function Main({ searchTerm }: MainProps) {
   const { data, isFetching, error } = useGetPokemonsQuery({ search: trimmed, page });
   const items = data?.items ?? [];
   const totalCount = data?.totalCount ?? 0;
-  const loading = isFetching;
   const errorMessage = error ? getQueryErrorMessage(error) : null;
 
   if (crash) {
@@ -52,7 +51,7 @@ function Main({ searchTerm }: MainProps) {
   }
 
   const totalPages = Math.ceil(totalCount / RESULTS_PER_PAGE);
-  const isEmpty = !loading && items.length === 0;
+  const isEmpty = !isFetching && items.length === 0;
 
   const handlePageChange = (next: number) => {
     setSearchParams({ page: String(next) });
@@ -82,15 +81,15 @@ function Main({ searchTerm }: MainProps) {
       <div className="main__list">
         {errorMessage && <p className="main__error">{errorMessage}</p>}
 
-        {loading && <Loader />}
+        {isFetching && <Loader />}
 
-        {!loading && !errorMessage && isEmpty && (
+        {!isFetching && !errorMessage && isEmpty && (
           <p className="main__placeholder">
             {trimmed ? 'No Pokemon found' : 'No Pokemon available'}
           </p>
         )}
 
-        {!loading && items.length > 0 && (
+        {!isFetching && items.length > 0 && (
           <>
             <CardList items={items} onSelectCard={handleSelectCard} selectedName={selectedName} />
             <Pagination
@@ -102,7 +101,7 @@ function Main({ searchTerm }: MainProps) {
         )}
 
         <div className="main__controls">
-          {!loading && (
+          {!isFetching && (
             <>
               <button onClick={handleRefresh} className="main__refresh">
                 Refresh
