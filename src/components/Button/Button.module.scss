@@ -8,7 +8,7 @@
   border: none;
   border-radius: vars.$radius;
   font-weight: 500;
-  color: #fff;
+  color: vars.$color-text-inverse;
   transition: background-color 0.2s;
 
   &:disabled {

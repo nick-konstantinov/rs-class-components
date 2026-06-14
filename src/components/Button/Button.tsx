@@ -15,6 +15,6 @@ export default function Button({
   ...rest
 }: ButtonProps) {
   return (
-    <button type={type} className={clsx(styles.button, styles[variant], className)} {...rest} />
+    <button {...rest} type={type} className={clsx(styles.button, styles[variant], className)} />
   );
 }
