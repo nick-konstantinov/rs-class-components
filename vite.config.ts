@@ -1,0 +1,29 @@
+import { defineConfig } from 'vitest/config';
+import { fileURLToPath, URL } from 'node:url';
+import react from '@vitejs/plugin-react';
+
+export default defineConfig({
+  base: '/rs-class-components/',
+  plugins: [react()],
+  resolve: {
+    alias: {
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+    },
+  },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        loadPaths: [fileURLToPath(new URL('./src', import.meta.url))],
+      },
+    },
+  },
+  test: {
+    environment: 'jsdom',
+    globals: true,
+    setupFiles: './src/setupTests.ts',
+    css: true,
+    coverage: {
+      provider: 'v8',
+    },
+  },
+});

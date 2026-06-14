@@ -1,0 +1,56 @@
+@use 'styles/variables' as vars;
+
+.page {
+  max-width: vars.$max-width;
+  margin: 0 auto;
+  padding: 2.5rem 1rem;
+}
+
+.header {
+  margin-bottom: 2.5rem;
+  text-align: center;
+}
+
+.title {
+  margin: 0;
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: vars.$color-text;
+}
+
+.subtitle {
+  margin: vars.$space-sm 0 0;
+  color: vars.$color-text-muted;
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: vars.$space-md;
+  margin-bottom: 3rem;
+}
+
+.sectionTitle {
+  margin: 0 0 vars.$space-md;
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: vars.$color-text;
+}
+
+.empty {
+  color: vars.$color-text-muted;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: vars.$space-md;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.gridItem {
+  display: flex;
+}

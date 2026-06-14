@@ -1,0 +1,37 @@
+@use 'styles/variables' as vars;
+
+.wrap {
+  position: relative;
+}
+
+.input {
+  width: 100%;
+}
+
+.list {
+  position: absolute;
+  top: calc(100% + 2px);
+  left: 0;
+  right: 0;
+  z-index: 10;
+  max-height: 12rem;
+  margin: 0;
+  padding: 0;
+  overflow-y: auto;
+  list-style: none;
+  background: vars.$color-surface;
+  border: 1px solid vars.$color-border;
+  border-radius: vars.$radius;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.option {
+  padding: 0.45rem 0.75rem;
+  color: vars.$color-text;
+  cursor: pointer;
+
+  &:hover,
+  &[aria-selected='true'] {
+    background: vars.$color-bg;
+  }
+}
