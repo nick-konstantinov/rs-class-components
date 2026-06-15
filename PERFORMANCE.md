@@ -67,4 +67,33 @@ The whole list re-renders on every interaction, every card rebuilds its data, an
 
 ## Results
 
-TODO
+Re-profiled the same four interactions after optimization (Render duration, same method as the baseline). Improvement = (before − after) / before × 100.
+
+| Action | Before (ms) | After (ms) | Improvement |
+| --- | --- | --- | --- |
+| Sorting | 363.5 | 22.8 | −94% |
+| Searching | 153.5 | 7.4 | −95% |
+| Year | 408.5 | 380.8 | −7% |
+| Columns | 343.3 | 357.2 | ~0% |
+
+### Sorting
+
+![final sorting](./docs/perf/final-sort.png)
+
+### Searching
+
+![final search](./docs/perf/final-search.png)
+
+### Year
+
+![final year](./docs/perf/final-year.png)
+
+### Columns
+
+![final columns](./docs/perf/final-columns.png)
+
+### What changed and what didn't
+
+**Sorting and searching got much faster** (~94–95%). The cards are memoized and their props don't change on these actions, so sorting just reorders the existing cards (stable keys) and searching only renders the few matching ones - everything else skips rendering.
+
+**Year and column changes barely moved.** These change a prop ("selectedYear" / "selectedColumns") on *every* card, so all of them have to re-render no matter what - memoization can't help when the prop actually changes. The fix for these two is **virtualization** (only render the cards visible on screen), which I didn't get to  this time.
