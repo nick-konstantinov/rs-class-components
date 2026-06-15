@@ -55,7 +55,15 @@ The whole list re-renders on every interaction, every card rebuilds its data, an
 
 ## Optimizations
 
-TODO
+**1. Stable keys.** Replaced "key={index}" with "key={country.id}" in the country list and "key={column}" in the data table rows. With index keys React loses track of items when the list is sorted/filtered and recreates DOM instead of reusing it.
+
+**2. useMemo.** Wrapped "years" and availableColumns in App, and "filteredCountries" in "CountryList", so they are not recomputed on every render. The biggest fix is in the population sort: before, "createYearDataMap()" was rebuilt for every comparison; now the population for the selected year is computed once per country into a "Map" and the comparator just looks it up.
+
+**3. useCallback.** Wrapped all handlers in "App" and switched them to the functional "setState((prev) => ...)" form so their identity stays stable across renders.
+
+**4. React.memo.** Wrapped "CountryCard", "DataTable", "SearchBar", "YearSelector" & "ColumnModal". Combined with the stable values and callbacks above, a child only re-renders when its own props really change, so typing in the search or changing the year no longer re-renders cards that did not change.
+
+**Virtualization** ("react-window") - didn't have time to finish this one.
 
 ## Results
 
