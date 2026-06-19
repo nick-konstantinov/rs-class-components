@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'react';
 import type { MouseEvent } from 'react';
 import { Outlet, useSearchParams } from 'react-router-dom';
-import './Main.css';
+import clsx from 'clsx';
+import styles from './Main.module.scss';
 import Loader from '@/components/Loader/Loader';
 import CardList from '@/components/CardList/CardList';
 import Pagination from '@/components/Pagination/Pagination';
@@ -74,17 +75,17 @@ function Main({ searchTerm }: MainProps) {
     dispatch(pokemonApi.util.invalidateTags(['Pokemon']));
   };
 
-  const className = selectedName ? 'main main--split' : 'main';
+  const className = clsx(styles.main, { [styles.split]: selectedName });
 
   return (
     <main className={className} onClick={handleBackgroundClick}>
-      <div className="main__list">
-        {errorMessage && <p className="main__error">{errorMessage}</p>}
+      <div className={styles.list}>
+        {errorMessage && <p className={styles.error}>{errorMessage}</p>}
 
         {isFetching && <Loader />}
 
         {!isFetching && !errorMessage && isEmpty && (
-          <p className="main__placeholder">
+          <p className={styles.placeholder}>
             {trimmed ? 'No Pokemon found' : 'No Pokemon available'}
           </p>
         )}
@@ -100,13 +101,13 @@ function Main({ searchTerm }: MainProps) {
           </>
         )}
 
-        <div className="main__controls">
+        <div className={styles.controls}>
           {!isFetching && (
             <>
-              <button onClick={handleRefresh} className="main__refresh">
+              <button onClick={handleRefresh} className={styles.refresh}>
                 Refresh
               </button>
-              <button onClick={() => setCrash(true)} className="main__error-btn">
+              <button onClick={() => setCrash(true)} className={styles.errorBtn}>
                 Throw test error
               </button>
             </>

@@ -7,8 +7,8 @@
   flex-wrap: wrap;
 }
 
-.pagination__page,
-.pagination__nav {
+.page,
+.nav {
   min-width: 2.25rem;
   padding: 0.4rem 0.65rem;
   background: var(--bg);
@@ -19,25 +19,25 @@
   cursor: pointer;
 }
 
-.pagination__page:hover:not(:disabled),
-.pagination__nav:hover:not(:disabled) {
+.page:hover:not(:disabled),
+.nav:hover:not(:disabled) {
   background: #f3f4f6;
 }
 
-.pagination__page[aria-current='page'] {
+.page[aria-current='page'] {
   background: var(--accent);
   color: var(--bg);
   border-color: var(--accent-border);
   cursor: default;
 }
 
-.pagination__page:disabled:not([aria-current='page']),
-.pagination__nav:disabled {
+.page:disabled:not([aria-current='page']),
+.nav:disabled {
   opacity: 0.5;
   cursor: not-allowed;
 }
 
-.pagination__ellipsis {
+.ellipsis {
   padding: 0 0.25rem;
   color: var(--text);
 }

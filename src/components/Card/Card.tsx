@@ -1,5 +1,5 @@
-import type { KeyboardEvent, MouseEvent } from 'react';
-import './Card.css';
+import clsx from 'clsx';
+import styles from './Card.module.scss';
 import placeholderSprite from '@/assets/images/pokemon-placeholder.svg';
 import type { PokemonItem } from '@/types/pokemon';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
@@ -19,33 +19,13 @@ function Card({ item, onSelect, isSelected }: CardProps) {
     onSelect?.(item.name);
   };
 
-  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    if (event.key === 'Enter' || event.key === ' ') {
-      event.preventDefault();
-      onSelect?.(item.name);
-    }
-  };
-
-  const handleCheckboxClick = (event: MouseEvent<HTMLElement>) => {
-    event.stopPropagation();
-  };
-
   const handleCheckboxChange = () => {
     dispatch(toggleSelected(item));
   };
 
-  const className = isSelected ? 'card card--selected' : 'card';
-
   return (
-    <div
-      className={className}
-      role="button"
-      tabIndex={0}
-      onClick={handleClick}
-      onKeyDown={handleKeyDown}
-      aria-current={isSelected ? 'true' : undefined}
-    >
-      <label className="card__checkbox" onClick={handleCheckboxClick}>
+    <div className={clsx(styles.card, { [styles.selected]: isSelected })}>
+      <label className={styles.checkbox}>
         <input
           type="checkbox"
           checked={isChecked}
@@ -54,11 +34,19 @@ function Card({ item, onSelect, isSelected }: CardProps) {
         />
       </label>
 
-      <img src={item.sprite ?? placeholderSprite} alt={item.name} className="card__image" />
+      <button
+        type="button"
+        className={styles.body}
+        onClick={handleClick}
+        aria-label={`View ${item.name} details`}
+        aria-current={isSelected ? 'true' : undefined}
+      />
 
-      <h3 className="card__title">{item.name}</h3>
+      <img src={item.sprite ?? placeholderSprite} alt={item.name} className={styles.image} />
 
-      <p className="card__description">
+      <h3 className={styles.title}>{item.name}</h3>
+
+      <p className={styles.description}>
         <span>
           <strong>Types:</strong>
           {item.types}

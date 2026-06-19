@@ -1,4 +1,4 @@
-import './Details.css';
+import styles from './Details.module.scss';
 import Loader from '@/components/Loader/Loader';
 import placeholderSprite from '@/assets/images/pokemon-placeholder.svg';
 import { useGetPokemonDetailQuery } from '@/store/pokemonApi';
@@ -14,23 +14,18 @@ function Details({ name, onClose }: DetailsProps) {
   const errorMessage = error ? getQueryErrorMessage(error) : null;
 
   return (
-    <aside className="details" aria-label="Pokemon details">
-      <button
-        type="button"
-        className="details__close"
-        onClick={onClose}
-        aria-label="Close details"
-      />
+    <aside className={styles.details} aria-label="Pokemon details">
+      <button type="button" className={styles.close} onClick={onClose} aria-label="Close details" />
 
       {isFetching && <Loader />}
 
-      {errorMessage && <p className="details__error">{errorMessage}</p>}
+      {errorMessage && <p className={styles.error}>{errorMessage}</p>}
 
       {data && (
-        <div className="details__content">
-          <h2 className="details__title">{data.name}</h2>
-          <img src={data.sprite ?? placeholderSprite} alt={data.name} className="details__image" />
-          <dl className="details__list">
+        <div className={styles.content}>
+          <h2 className={styles.title}>{data.name}</h2>
+          <img src={data.sprite ?? placeholderSprite} alt={data.name} className={styles.image} />
+          <dl className={styles.list}>
             <dt>Types</dt>
             <dd>{data.types}</dd>
             <dt>Abilities</dt>

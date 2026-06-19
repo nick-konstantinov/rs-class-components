@@ -1,25 +1,25 @@
 import { EXTERNAL_LINKS } from '@/external-links';
-import './About.css';
+import styles from './About.module.scss';
 
 function About() {
   return (
-    <section className="about">
-      <h2 className="about__title">About</h2>
+    <section className={styles.about}>
+      <h2 className={styles.title}>About</h2>
 
-      <p className="about__intro">
+      <p className={styles.intro}>
         Hi! I'm <strong>Nick Konstantinov</strong>, a student of the{' '}
-        <a className="about__link" href={EXTERNAL_LINKS.course} target="_blank" rel="noreferrer">
+        <a className={styles.link} href={EXTERNAL_LINKS.course} target="_blank" rel="noreferrer">
           Rolling Scopes School: React 2026Q2
         </a>{' '}
         course. This Pokemon search app is built as Task 3 of the React module.
       </p>
 
-      <h3 className="about__subtitle">Contacts</h3>
-      <ul className="about__list">
+      <h3 className={styles.subtitle}>Contacts</h3>
+      <ul className={styles.list}>
         <li>
           GitHub:{' '}
           <a
-            className="about__link"
+            className={styles.link}
             href={EXTERNAL_LINKS.authorGithub}
             target="_blank"
             rel="noreferrer"
@@ -29,17 +29,17 @@ function About() {
         </li>
         <li>
           Email:{' '}
-          <a className="about__link" href={EXTERNAL_LINKS.authorEmail}>
+          <a className={styles.link} href={EXTERNAL_LINKS.authorEmail}>
             nick.konstantinov.job@gmail.com
           </a>
         </li>
       </ul>
 
-      <h3 className="about__subtitle">Course materials</h3>
+      <h3 className={styles.subtitle}>Course materials</h3>
       <p>
         Task descriptions and resources:{' '}
         <a
-          className="about__link"
+          className={styles.link}
           href={EXTERNAL_LINKS.courseTasks}
           target="_blank"
           rel="noreferrer"

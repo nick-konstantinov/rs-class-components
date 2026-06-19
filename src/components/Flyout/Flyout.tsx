@@ -1,17 +1,13 @@
-import './Flyout.css';
+import styles from './Flyout.module.scss';
 import Button from '@/components/Button/Button';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import {
-  selectSelectedCount,
-  selectSelectedList,
-  unselectAll,
-} from '@/store/slices/selectedItemsSlice';
+import { selectItemsCount, selectItems, unselectAll } from '@/store/slices/selectedItemsSlice';
 import { downloadCsv } from '@/utils/csv';
 
 function Flyout() {
   const dispatch = useAppDispatch();
-  const count = useAppSelector(selectSelectedCount);
-  const selected = useAppSelector(selectSelectedList);
+  const count = useAppSelector(selectItemsCount);
+  const selected = useAppSelector(selectItems);
 
   if (count === 0) return null;
 
@@ -24,10 +20,10 @@ function Flyout() {
   };
 
   return (
-    <aside className="flyout" role="region" aria-label="Selection">
-      <span className="flyout__count">
-        <span className="flyout__count-number">{count}</span>{' '}
-        {count === 1 ? 'item is' : 'items are'} selected
+    <aside className={styles.flyout} role="region" aria-label="Selection">
+      <span className={styles.count}>
+        <span className={styles.countNumber}>{count}</span> {count === 1 ? 'item is' : 'items are'}{' '}
+        selected
       </span>
       <Button onClick={handleUnselectAll}>Unselect all</Button>
       <Button variant="primary" onClick={handleDownload}>

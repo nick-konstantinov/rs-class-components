@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import Card from './Card';
 import { makePokemon } from '@/test-utils/mockPokemon';
 import { renderWithStore } from '@/test-utils/renderWithStore';
-import { selectSelectedMap } from '@/store/slices/selectedItemsSlice';
+import { selectItemsMap } from '@/store/slices/selectedItemsSlice';
 
 describe('Card', () => {
   it('renders pokemon details', () => {
@@ -90,7 +90,7 @@ describe('Card', () => {
 
     await user.click(screen.getByRole('checkbox', { name: 'Select bulbasaur' }));
 
-    expect(selectSelectedMap(store.getState())).toEqual({ bulbasaur: item });
+    expect(selectItemsMap(store.getState())).toEqual({ bulbasaur: item });
     expect(onSelect).not.toHaveBeenCalled();
   });
 });

@@ -5,7 +5,7 @@
   margin-top: 1rem;
 }
 
-.search__input {
+.input {
   flex: 0 1 320px;
   padding: 0.5rem 0.75rem;
   font-size: 1rem;
@@ -13,8 +13,8 @@
   border-radius: 4px;
   background: var(--bg);
   color: var(--text-h);
-}
 
-.search__input:focus {
-  outline: 2px solid var(--accent);
+  &:focus {
+    outline: 2px solid var(--accent);
+  }
 }

@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import Flyout from './Flyout';
 import { renderWithStore } from '@/test-utils/renderWithStore';
 import { makePokemon } from '@/test-utils/mockPokemon';
-import { selectSelectedCount } from '@/store/slices/selectedItemsSlice';
+import { selectItemsCount } from '@/store/slices/selectedItemsSlice';
 import { downloadCsv } from '@/utils/csv';
 
 vi.mock('@/utils/csv', () => ({
@@ -41,7 +41,7 @@ describe('Flyout', () => {
 
     await user.click(screen.getByRole('button', { name: 'Unselect all' }));
 
-    expect(selectSelectedCount(store.getState())).toBe(0);
+    expect(selectItemsCount(store.getState())).toBe(0);
   });
 
   it('calls downloadCsv with the selected items when Download is clicked', async () => {

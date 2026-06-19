@@ -1,4 +1,4 @@
-.btn {
+.button {
   padding: 0.5rem 1.25rem;
   font: inherit;
   font-size: 1rem;
@@ -10,22 +10,22 @@
     border-color 0.2s;
 }
 
-.btn--primary {
+.primary {
   background: var(--accent);
   color: white;
   border-color: var(--accent);
+
+  &:hover {
+    opacity: 0.85;
+  }
 }
 
-.btn--primary:hover {
-  opacity: 0.85;
-}
-
-.btn--secondary {
+.secondary {
   background: var(--bg);
   color: var(--text-h);
   border-color: var(--border);
-}
 
-.btn--secondary:hover {
-  border-color: var(--accent);
+  &:hover {
+    border-color: var(--accent);
+  }
 }

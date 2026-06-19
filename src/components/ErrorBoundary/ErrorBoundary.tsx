@@ -1,4 +1,4 @@
-import './ErrorBoundary.css';
+import styles from './ErrorBoundary.module.scss';
 import { Component, type ReactNode } from 'react';
 
 interface ErrorBoundaryState {
@@ -29,10 +29,10 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
   render() {
     if (this.state.hasError) {
       return (
-        <div className="error-boundary">
-          <h2 className="error-boundary__text">Something went wrong</h2>
+        <div className={styles.errorBoundary}>
+          <h2 className={styles.text}>Something went wrong</h2>
 
-          <button className="error-boundary__btn" onClick={this.handleReset}>
+          <button className={styles.btn} onClick={this.handleReset}>
             Try again
           </button>
         </div>

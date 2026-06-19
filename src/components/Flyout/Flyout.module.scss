@@ -15,12 +15,12 @@
   box-shadow: var(--shadow);
 }
 
-.flyout__count {
+.count {
   font-weight: 500;
   color: var(--text-h);
 }
 
-.flyout__count-number {
+.countNumber {
   font-weight: 700;
   color: var(--accent);
 }
@@ -31,7 +31,7 @@
     align-items: stretch;
   }
 
-  .flyout__count {
+  .count {
     text-align: center;
   }
 }

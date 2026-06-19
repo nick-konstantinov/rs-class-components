@@ -1,4 +1,4 @@
-import './App.css';
+import styles from './App.module.scss';
 import { useRoutes } from 'react-router-dom';
 import Header from '@/components/Header/Header';
 import ErrorBoundary from '@/components/ErrorBoundary/ErrorBoundary';
@@ -12,7 +12,7 @@ function App() {
   const routes = useRoutes(getRouteConfig(searchTerm));
 
   return (
-    <div className="app">
+    <div className={styles.app}>
       <Header initialTerm={searchTerm} onSearch={setSearchTerm} />
 
       <ErrorBoundary>{routes}</ErrorBoundary>
