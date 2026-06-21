@@ -10,6 +10,11 @@
   "theme": {
     "darkMode": "Dark mode"
   },
+  "notFound": {
+    "title": "404",
+    "message": "The page you're looking for doesn't exist.",
+    "backHome": "Back home"
+  },
   "about": {
     "title": "About",
     "intro": "Hi! I'm <name>Nick Konstantinov</name>, a student of the <course>Rolling Scopes School: React 2026Q2</course> course. This Pokemon search app is built as Task 3 of the React module.",
