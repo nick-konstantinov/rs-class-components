@@ -1,0 +1,9 @@
+{
+  "app": {
+    "title": "Pokemon Search"
+  },
+  "nav": {
+    "home": "Home",
+    "about": "About"
+  }
+}
