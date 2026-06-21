@@ -9,5 +9,14 @@
   },
   "theme": {
     "darkMode": "Dark mode"
+  },
+  "about": {
+    "title": "About",
+    "intro": "Hi! I'm <name>Nick Konstantinov</name>, a student of the <course>Rolling Scopes School: React 2026Q2</course> course. This Pokemon search app is built as Task 3 of the React module.",
+    "contactsTitle": "Contacts",
+    "github": "GitHub:",
+    "email": "Email:",
+    "materialsTitle": "Course materials",
+    "materials": "Task descriptions and resources:"
   }
 }

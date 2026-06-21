@@ -9,5 +9,14 @@
   },
   "theme": {
     "darkMode": "Тёмная тема"
+  },
+  "about": {
+    "title": "О проекте",
+    "intro": "Привет! Я <name>Ник Константинов</name>, студент курса <course>Rolling Scopes School: React 2026Q2</course>. Это приложение для поиска покемонов — Task 3 модуля React.",
+    "contactsTitle": "Контакты",
+    "github": "GitHub:",
+    "email": "Email:",
+    "materialsTitle": "Материалы курса",
+    "materials": "Описания заданий и ресурсы:"
   }
 }
