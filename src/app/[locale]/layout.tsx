@@ -4,6 +4,11 @@ import { notFound } from 'next/navigation';
 import { hasLocale, NextIntlClientProvider } from 'next-intl';
 import { setRequestLocale } from 'next-intl/server';
 import { routing } from '@/i18n/routing';
+import { readThemeCookie } from '@/lib/theme.server';
+import { StoreProvider } from '@/app/_providers/StoreProvider';
+import { ThemeProvider } from '@/app/_providers/ThemeProvider';
+import { Header } from '@/app/_components/Header/Header';
+import styles from './layout.module.scss';
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -23,10 +28,21 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
 
   setRequestLocale(locale);
 
+  const initialTheme = await readThemeCookie();
+
   return (
     <html lang={locale}>
       <body>
-        <NextIntlClientProvider>{children}</NextIntlClientProvider>
+        <NextIntlClientProvider>
+          <StoreProvider>
+            <ThemeProvider initialTheme={initialTheme}>
+              <div className={styles.column}>
+                <Header />
+                <main className={styles.main}>{children}</main>
+              </div>
+            </ThemeProvider>
+          </StoreProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

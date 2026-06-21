@@ -3,7 +3,11 @@
     "title": "Pokemon Search"
   },
   "nav": {
+    "label": "Main navigation",
     "home": "Home",
     "about": "About"
+  },
+  "theme": {
+    "darkMode": "Dark mode"
   }
 }
