@@ -1,8 +1,8 @@
 import type { RouteObject } from 'react-router-dom';
 import Main from '@/components/Main/Main';
 import DetailsOutletSlot from '@/components/Details/DetailsOutletSlot';
-import About from '@/pages/About/About';
-import NotFound from '@/pages/NotFound/NotFound';
+import About from '@/views/About/About';
+import NotFound from '@/views/NotFound/NotFound';
 import { ROUTES } from './paths';
 
 export function getRouteConfig(searchTerm: string): RouteObject[] {
