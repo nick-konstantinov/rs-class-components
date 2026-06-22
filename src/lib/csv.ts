@@ -1,0 +1,29 @@
+import type { PokemonItem } from '@/types/pokemon';
+
+const HEADERS = ['#', 'Name', 'Types', 'Abilities', 'Height', 'Weight', 'Sprite'] as const;
+
+function escapeCsvField(value: string): string {
+  if (/[",\r\n]/.test(value)) {
+    return `"${value.replace(/"/g, '""')}"`;
+  }
+  return value;
+}
+
+function itemToRow(item: PokemonItem, index: number): string {
+  const fields = [
+    String(index + 1),
+    item.name,
+    item.types,
+    item.abilities,
+    String(item.height),
+    String(item.weight),
+    item.sprite ?? '',
+  ];
+  return fields.map(escapeCsvField).join(',');
+}
+
+export function itemsToCsv(items: PokemonItem[]): string {
+  const header = HEADERS.join(',');
+  if (items.length === 0) return header;
+  return [header, ...items.map(itemToRow)].join('\r\n');
+}

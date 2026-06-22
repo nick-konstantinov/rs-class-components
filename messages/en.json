@@ -20,10 +20,19 @@
   },
   "card": {
     "viewDetails": "View {name} details",
+    "select": "Select {name}",
     "types": "Types:",
     "abilities": "Abilities:",
     "height": "Height:",
     "weight": "Weight:"
+  },
+  "flyout": {
+    "label": "Selection",
+    "selected": "{count, plural, =1 {# item selected} other {# items selected}}",
+    "unselectAll": "Unselect all",
+    "generate": "Generate CSV",
+    "generating": "Generating…",
+    "download": "Save {filename}"
   },
   "list": {
     "empty": "No pokemon found.",

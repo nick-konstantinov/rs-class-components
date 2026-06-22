@@ -20,10 +20,19 @@
   },
   "card": {
     "viewDetails": "Подробнее о {name}",
+    "select": "Выбрать {name}",
     "types": "Типы:",
     "abilities": "Способности:",
     "height": "Рост:",
     "weight": "Вес:"
+  },
+  "flyout": {
+    "label": "Выбор",
+    "selected": "Выбрано: {count, plural, one {# покемон} few {# покемона} many {# покемонов} other {# покемона}}",
+    "unselectAll": "Снять выбор",
+    "generate": "Сгенерировать CSV",
+    "generating": "Генерация…",
+    "download": "Сохранить {filename}"
   },
   "list": {
     "empty": "Покемоны не найдены.",

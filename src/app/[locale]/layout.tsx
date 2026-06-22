@@ -8,6 +8,7 @@ import { readThemeCookie } from '@/lib/theme.server';
 import { StoreProvider } from '@/app/_providers/StoreProvider';
 import { ThemeProvider } from '@/app/_providers/ThemeProvider';
 import { Header } from '@/app/_components/Header/Header';
+import { Flyout } from '@/app/_components/Flyout/Flyout';
 import styles from './layout.module.scss';
 
 export function generateStaticParams() {
@@ -40,6 +41,7 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
                 <Header />
                 <main className={styles.main}>{children}</main>
               </div>
+              <Flyout />
             </ThemeProvider>
           </StoreProvider>
         </NextIntlClientProvider>

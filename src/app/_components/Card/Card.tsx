@@ -3,6 +3,7 @@ import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/routing';
 import placeholderSprite from '@/assets/images/pokemon-placeholder.svg';
 import type { PokemonItem } from '@/types/pokemon';
+import { CardSelect } from './CardSelect';
 import styles from './Card.module.scss';
 
 interface CardProps {
@@ -16,6 +17,7 @@ export async function Card({ item, query, page }: CardProps) {
 
   return (
     <article className={styles.card}>
+      <CardSelect item={item} className={styles.checkbox} />
       <Link
         href={{ pathname: '/', query: { q: query, page, details: item.name } }}
         className={styles.body}
