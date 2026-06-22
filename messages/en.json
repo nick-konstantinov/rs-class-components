@@ -21,6 +21,20 @@
     "empty": "No pokemon found.",
     "notFound": "Nothing found for \"{query}\"."
   },
+  "pagination": {
+    "label": "Pagination",
+    "previous": "Previous page",
+    "next": "Next page"
+  },
+  "details": {
+    "label": "Pokemon details",
+    "close": "Close details",
+    "types": "Types",
+    "abilities": "Abilities",
+    "height": "Height",
+    "weight": "Weight",
+    "notFound": "Pokemon not found."
+  },
   "notFound": {
     "title": "404",
     "message": "The page you're looking for doesn't exist.",
