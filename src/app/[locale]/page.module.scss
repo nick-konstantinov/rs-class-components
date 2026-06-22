@@ -1,0 +1,21 @@
+.layout {
+  padding: 16px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  align-items: start;
+}
+
+.split {
+  grid-template-columns: 1fr 35%;
+}
+
+@media (max-width: 600px) {
+  .split {
+    grid-template-columns: 1fr;
+  }
+}
+
+.results {
+  min-width: 0;
+}

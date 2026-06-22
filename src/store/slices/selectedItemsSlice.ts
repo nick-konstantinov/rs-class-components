@@ -1,6 +1,6 @@
 import { createSelector, createSlice, type PayloadAction } from '@reduxjs/toolkit';
 import type { PokemonItem } from '@/types/pokemon';
-import type { RootState } from '@/store';
+import type { RootState } from '@/store/store';
 
 interface SelectedItemsState {
   byName: Record<string, PokemonItem>;

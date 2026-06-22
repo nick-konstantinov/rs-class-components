@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: pokemon-search
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: POKEMON_API_URL
+        value: https://pokeapi.co/api/v2
+      - key: REVALIDATE
+        value: '60'

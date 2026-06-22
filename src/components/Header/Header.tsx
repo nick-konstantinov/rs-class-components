@@ -1,30 +1,30 @@
+import { Suspense } from 'react';
+import { getTranslations } from 'next-intl/server';
+import { Link } from '@/i18n/routing';
+import { ThemeToggle } from '@/components/ThemeToggle/ThemeToggle';
+import { LanguageSwitcher } from '@/components/LanguageSwitcher/LanguageSwitcher';
+import { Search } from '@/components/Search/Search';
 import styles from './Header.module.scss';
-import Search from '@/components/Search/Search';
-import ThemeToggle from '@/components/ThemeToggle/ThemeToggle';
-import { ROUTES } from '@/routes';
-import { NavLink } from 'react-router-dom';
 
-interface HeaderProps {
-  initialTerm: string;
-  onSearch: (term: string) => void;
-}
+export async function Header() {
+  const t = await getTranslations();
 
-function Header({ initialTerm, onSearch }: HeaderProps) {
   return (
     <header className={styles.header}>
-      <h1 className={styles.title}>Pokemon Search</h1>
-      <nav className={styles.nav} aria-label="Main navigation">
-        <NavLink to={ROUTES.home} end className={styles.navLink}>
-          Home
-        </NavLink>
-        <NavLink to={ROUTES.about} className={styles.navLink}>
-          About
-        </NavLink>
+      <LanguageSwitcher className={styles.languageSwitcher} />
+      <h1 className={styles.title}>{t('app.title')}</h1>
+      <nav className={styles.nav} aria-label={t('nav.label')}>
+        <Link href="/" className={styles.navLink}>
+          {t('nav.home')}
+        </Link>
+        <Link href="/about" className={styles.navLink}>
+          {t('nav.about')}
+        </Link>
       </nav>
-      <Search initialTerm={initialTerm} onSearch={onSearch} />
+      <Suspense>
+        <Search />
+      </Suspense>
       <ThemeToggle className={styles.themeToggle} />
     </header>
   );
 }
-
-export default Header;

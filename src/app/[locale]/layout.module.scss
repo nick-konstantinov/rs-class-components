@@ -1,0 +1,25 @@
+.column {
+  width: 1126px;
+  max-width: 100%;
+  margin: 0 auto;
+  text-align: center;
+  border-inline: 1px solid var(--border);
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+
+.main {
+  flex: 1;
+}
+
+.column:has(~ [data-flyout]) {
+  padding-bottom: 3rem;
+}
+
+@media (max-width: 450px) {
+  .column:has(~ [data-flyout]) {
+    padding-bottom: 8rem;
+  }
+}

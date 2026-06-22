@@ -11,6 +11,12 @@
   right: 1.5rem;
 }
 
+.languageSwitcher {
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+}
+
 .title {
   margin: 0;
   font-size: 1.75rem;
@@ -40,7 +46,8 @@
 }
 
 @media (max-width: 600px) {
-  .themeToggle {
+  .themeToggle,
+  .languageSwitcher {
     position: static;
     margin-top: 0.5rem;
   }

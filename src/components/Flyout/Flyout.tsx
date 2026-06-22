@@ -1,36 +1,49 @@
-import styles from './Flyout.module.scss';
-import Button from '@/components/Button/Button';
-import { useAppDispatch, useAppSelector } from '@/store/hooks';
-import { selectItemsCount, selectItems, unselectAll } from '@/store/slices/selectedItemsSlice';
-import { downloadCsv } from '@/utils/csv';
+'use client';
 
-function Flyout() {
+import { useActionState } from 'react';
+import { useTranslations } from 'next-intl';
+import { useAppDispatch, useAppSelector } from '@/store/storeHooks';
+import { selectItems, selectItemsCount, unselectAll } from '@/store/slices/selectedItemsSlice';
+import { generateCsvAction, type CsvState } from '@/app/[locale]/actions';
+import styles from './Flyout.module.scss';
+
+const initialState: CsvState = { base64: '', filename: '' };
+
+export function Flyout() {
   const dispatch = useAppDispatch();
   const count = useAppSelector(selectItemsCount);
   const selected = useAppSelector(selectItems);
+  const t = useTranslations('flyout');
+  const [state, formAction, isPending] = useActionState(generateCsvAction, initialState);
 
-  if (count === 0) return null;
-
-  const handleUnselectAll = () => {
-    dispatch(unselectAll());
-  };
-
-  const handleDownload = () => {
-    downloadCsv(selected);
-  };
+  if (count === 0) {
+    return null;
+  }
 
   return (
-    <aside className={styles.flyout} role="region" aria-label="Selection">
-      <span className={styles.count}>
-        <span className={styles.countNumber}>{count}</span> {count === 1 ? 'item is' : 'items are'}{' '}
-        selected
-      </span>
-      <Button onClick={handleUnselectAll}>Unselect all</Button>
-      <Button variant="primary" onClick={handleDownload}>
-        Download
-      </Button>
+    <aside data-flyout className={styles.flyout} role="region" aria-label={t('label')}>
+      <span className={styles.count}>{t('selected', { count })}</span>
+
+      <button type="button" className={styles.button} onClick={() => dispatch(unselectAll())}>
+        {t('unselectAll')}
+      </button>
+
+      <form action={formAction}>
+        <input type="hidden" name="items" value={JSON.stringify(selected)} />
+        <button type="submit" className={styles.primary} disabled={isPending}>
+          {isPending ? t('generating') : t('generate')}
+        </button>
+      </form>
+
+      {state.base64 && (
+        <a
+          className={styles.download}
+          download={state.filename}
+          href={`data:text/csv;charset=utf-8;base64,${state.base64}`}
+        >
+          {t('download', { filename: state.filename })}
+        </a>
+      )}
     </aside>
   );
 }
-
-export default Flyout;
