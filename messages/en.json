@@ -7,6 +7,14 @@
     "home": "Home",
     "about": "About"
   },
+  "search": {
+    "label": "Search Pokemon",
+    "placeholder": "Search Pokemon by name...",
+    "submit": "Search"
+  },
+  "lang": {
+    "label": "Language"
+  },
   "theme": {
     "darkMode": "Dark mode"
   },

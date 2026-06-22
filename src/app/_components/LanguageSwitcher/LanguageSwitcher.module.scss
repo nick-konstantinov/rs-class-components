@@ -1,0 +1,26 @@
+.switcher {
+  display: inline-flex;
+  gap: 0.25rem;
+}
+
+.option {
+  min-width: 2.25rem;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.85rem;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  cursor: pointer;
+
+  &:hover:not(:disabled) {
+    background: var(--accent-bg);
+  }
+}
+
+.active {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent-border);
+  cursor: default;
+}
