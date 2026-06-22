@@ -62,11 +62,17 @@ See `.env.example`:
 | `npm run test:watch` | Vitest (watch)             |
 | `npm run format:fix` | Prettier write             |
 
-## Deployment (Vercel)
+## Deployment (Render)
 
-SSR and Server Actions need a Node runtime, so the app is deployed to **Vercel**
-(GitHub Pages serves static files only and cannot run the server parts).
+SSR and Server Actions need a Node runtime, so the app runs as a **Render Web Service**
+(GitHub Pages serves static files only and cannot run the server parts). `next start`
+honors the `PORT` env variable that Render provides, so no extra config is needed.
 
-1. Import the repository in Vercel — the Next.js preset is detected automatically.
-2. Add the environment variables (`POKEMON_API_URL`, `REVALIDATE`) in the project settings.
-3. Deploy. Pushes to the tracked branch trigger new deployments.
+The repo ships a `render.yaml` Blueprint:
+
+- **Build command:** `npm install && npm run build`
+- **Start command:** `npm start`
+- **Env vars:** `POKEMON_API_URL`, `REVALIDATE`
+
+Deploy by creating a Blueprint (New → Blueprint, pick the repo) or a Web Service pointing
+at the same build/start commands and env vars.
