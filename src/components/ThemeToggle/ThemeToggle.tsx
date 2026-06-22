@@ -1,18 +1,22 @@
+'use client';
+
 import clsx from 'clsx';
+import { useTranslations } from 'next-intl';
+import { useTheme } from '@/providers/ThemeProvider';
 import styles from './ThemeToggle.module.scss';
-import { useTheme } from '@/context/themeContext';
 
-interface ThemeToggleProps {
+type ThemeToggleProps = {
   className?: string;
-}
+};
 
-function ThemeToggle({ className }: ThemeToggleProps) {
+export function ThemeToggle({ className }: ThemeToggleProps) {
   const { theme, toggleTheme } = useTheme();
+  const t = useTranslations('theme');
   const isDark = theme === 'dark';
 
   return (
     <label className={clsx(styles.toggle, className)}>
-      <span className={styles.label}>Dark mode</span>
+      <span className={styles.label}>{t('darkMode')}</span>
       <input
         type="checkbox"
         role="switch"
@@ -23,5 +27,3 @@ function ThemeToggle({ className }: ThemeToggleProps) {
     </label>
   );
 }
-
-export default ThemeToggle;

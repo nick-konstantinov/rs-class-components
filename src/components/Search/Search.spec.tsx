@@ -1,44 +1,40 @@
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import Search from './Search';
+import { NextIntlClientProvider } from 'next-intl';
+import { describe, expect, it, vi } from 'vitest';
+
+vi.mock('next/navigation', () => ({
+  useSearchParams: () => new URLSearchParams('q=charizard'),
+}));
+
+vi.mock('@/i18n/routing', () => ({
+  routing: { locales: ['en', 'ru'], defaultLocale: 'en' },
+}));
+
+vi.mock('@/app/[locale]/actions', () => ({
+  searchAction: vi.fn(),
+}));
+
+import { Search } from './Search';
+
+const messages = {
+  search: {
+    label: 'Search Pokemon',
+    placeholder: 'Search Pokemon by name...',
+    submit: 'Search',
+  },
+};
 
 describe('Search', () => {
-  it('renders an input pre-filled with initialTerm', () => {
-    render(<Search initialTerm="bulbasaur" onSearch={() => {}} />);
+  it('renders the URL query as the uncontrolled default value', () => {
+    render(
+      <NextIntlClientProvider locale="en" messages={messages}>
+        <Search />
+      </NextIntlClientProvider>,
+    );
 
-    expect(screen.getByRole('textbox')).toHaveValue('bulbasaur');
-  });
-
-  it('updates the input value as the user types', async () => {
-    const user = userEvent.setup();
-    render(<Search initialTerm="" onSearch={() => {}} />);
-
-    const input = screen.getByRole('textbox');
-    await user.type(input, 'pika');
-
-    expect(input).toHaveValue('pika');
-  });
-
-  it('trims and notifies onSearch when the user submits via Enter', async () => {
-    const user = userEvent.setup();
-    const onSearch = vi.fn();
-
-    render(<Search initialTerm="" onSearch={onSearch} />);
-
-    await user.type(screen.getByRole('textbox'), '  pikachu  {Enter}');
-
-    expect(onSearch).toHaveBeenCalledTimes(1);
-    expect(onSearch).toHaveBeenCalledWith('pikachu');
-  });
-
-  it('submits via the Search button as well', async () => {
-    const user = userEvent.setup();
-    const onSearch = vi.fn();
-
-    render(<Search initialTerm="charmander" onSearch={onSearch} />);
-
-    await user.click(screen.getByRole('button', { name: 'Search' }));
-
-    expect(onSearch).toHaveBeenCalledWith('charmander');
+    const input = screen.getByRole('textbox', { name: 'Search Pokemon' });
+    expect(input).toHaveValue('charizard');
+    expect(input).toHaveAttribute('name', 'q');
+    expect(screen.getByRole('button', { name: 'Search' })).toBeInTheDocument();
   });
 });

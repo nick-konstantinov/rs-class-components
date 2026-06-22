@@ -1,39 +1,32 @@
-import { useState } from 'react';
-import type { ChangeEvent, SyntheticEvent } from 'react';
+'use client';
+
+import { useSearchParams } from 'next/navigation';
+import { useLocale, useTranslations } from 'next-intl';
+import { hasLocale } from 'next-intl';
+import { routing } from '@/i18n/routing';
+import { searchAction } from '@/app/[locale]/actions';
 import styles from './Search.module.scss';
-import Button from '@/components/Button/Button';
 
-interface SearchProps {
-  initialTerm: string;
-  onSearch: (term: string) => void;
-}
-
-function Search({ initialTerm, onSearch }: SearchProps) {
-  const [value, setValue] = useState(initialTerm);
-
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setValue(event.target.value);
-  };
-
-  const handleSubmit = (event: SyntheticEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    onSearch(value.trim());
-  };
+export function Search() {
+  const q = useSearchParams().get('q') ?? '';
+  const localeValue = useLocale();
+  const locale = hasLocale(routing.locales, localeValue) ? localeValue : routing.defaultLocale;
+  const t = useTranslations('search');
 
   return (
-    <form className={styles.search} onSubmit={handleSubmit}>
+    <form className={styles.search} action={searchAction.bind(null, locale)}>
       <input
+        key={q}
         type="text"
+        name="q"
+        defaultValue={q}
+        placeholder={t('placeholder')}
+        aria-label={t('label')}
         className={styles.input}
-        placeholder="Search Pokemon by name..."
-        value={value}
-        onChange={handleChange}
       />
-      <Button type="submit" variant="primary">
-        Search
-      </Button>
+      <button type="submit" className={styles.button}>
+        {t('submit')}
+      </button>
     </form>
   );
 }
-
-export default Search;

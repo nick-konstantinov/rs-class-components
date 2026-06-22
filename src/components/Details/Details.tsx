@@ -1,44 +1,52 @@
-import styles from './Details.module.scss';
-import Loader from '@/components/Loader/Loader';
+import Image from 'next/image';
+import { getTranslations } from 'next-intl/server';
+import { Link } from '@/i18n/routing';
 import placeholderSprite from '@/assets/images/pokemon-placeholder.svg';
-import { useGetPokemonDetailQuery } from '@/store/pokemonApi';
-import { getQueryErrorMessage } from '@/utils/errors';
+import { getPokemonDetail } from '@/lib/pokemon';
+import styles from './Details.module.scss';
 
 interface DetailsProps {
   name: string;
-  onClose: () => void;
+  query: string;
+  page: number;
 }
 
-function Details({ name, onClose }: DetailsProps) {
-  const { data, isFetching, error } = useGetPokemonDetailQuery(name);
-  const errorMessage = error ? getQueryErrorMessage(error) : null;
+export async function Details({ name, query, page }: DetailsProps) {
+  const t = await getTranslations('details');
+  const item = await getPokemonDetail(name);
 
   return (
-    <aside className={styles.details} aria-label="Pokemon details">
-      <button type="button" className={styles.close} onClick={onClose} aria-label="Close details" />
+    <aside className={styles.details} aria-label={t('label')}>
+      <Link
+        className={styles.close}
+        href={{ pathname: '/', query: { q: query, page } }}
+        aria-label={t('close')}
+      />
 
-      {isFetching && <Loader />}
-
-      {errorMessage && <p className={styles.error}>{errorMessage}</p>}
-
-      {data && (
+      {item ? (
         <div className={styles.content}>
-          <h2 className={styles.title}>{data.name}</h2>
-          <img src={data.sprite ?? placeholderSprite} alt={data.name} className={styles.image} />
+          <h2 className={styles.title}>{item.name}</h2>
+          <Image
+            src={item.sprite ?? placeholderSprite}
+            alt={item.name}
+            width={150}
+            height={150}
+            className={styles.image}
+          />
           <dl className={styles.list}>
-            <dt>Types</dt>
-            <dd>{data.types}</dd>
-            <dt>Abilities</dt>
-            <dd>{data.abilities}</dd>
-            <dt>Height</dt>
-            <dd>{data.height}</dd>
-            <dt>Weight</dt>
-            <dd>{data.weight}</dd>
+            <dt>{t('types')}</dt>
+            <dd>{item.types}</dd>
+            <dt>{t('abilities')}</dt>
+            <dd>{item.abilities}</dd>
+            <dt>{t('height')}</dt>
+            <dd>{item.height}</dd>
+            <dt>{t('weight')}</dt>
+            <dd>{item.weight}</dd>
           </dl>
         </div>
+      ) : (
+        <p className={styles.error}>{t('notFound')}</p>
       )}
     </aside>
   );
 }
-
-export default Details;

@@ -1,26 +1,19 @@
-import styles from './CardList.module.scss';
-import Card from '@/components/Card/Card';
+import { Card } from '@/components/Card/Card';
 import type { PokemonItem } from '@/types/pokemon';
+import styles from './CardList.module.scss';
 
 interface CardListProps {
   items: PokemonItem[];
-  onSelectCard?: (name: string) => void;
-  selectedName?: string | null;
+  query: string;
+  page: number;
 }
 
-function CardList({ items, onSelectCard, selectedName }: CardListProps) {
+export function CardList({ items, query, page }: CardListProps) {
   return (
     <div className={styles.list}>
       {items.map((item) => (
-        <Card
-          key={item.name}
-          item={item}
-          onSelect={onSelectCard}
-          isSelected={item.name === selectedName}
-        />
+        <Card key={item.name} item={item} query={query} page={page} />
       ))}
     </div>
   );
 }
-
-export default CardList;

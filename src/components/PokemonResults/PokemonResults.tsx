@@ -1,8 +1,8 @@
 import { getTranslations } from 'next-intl/server';
 import { getPokemonPage } from '@/lib/pokemon';
 import { RESULTS_PER_PAGE } from '@/constants';
-import { CardList } from '@/app/_components/CardList/CardList';
-import { Pagination } from '@/app/_components/Pagination/Pagination';
+import { CardList } from '@/components/CardList/CardList';
+import { Pagination } from '@/components/Pagination/Pagination';
 import styles from './PokemonResults.module.scss';
 
 interface PokemonResultsProps {

@@ -1,6 +1,5 @@
 {
   "name": "nick-konstantinov-react2026q2",
-  "homepage": "https://nick-konstantinov.github.io/rs-class-components",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -25,8 +24,7 @@
     "next-intl": "^4.13.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
-    "react-redux": "^9.3.0",
-    "react-router-dom": "^7.18.0"
+    "react-redux": "^9.3.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -42,8 +40,6 @@
     "eslint": "^10.2.1",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-react-hooks": "^7.1.1",
-    "eslint-plugin-react-refresh": "^0.5.2",
-    "gh-pages": "^6.3.0",
     "globals": "^17.5.0",
     "husky": "^9.1.7",
     "jsdom": "^29.1.1",

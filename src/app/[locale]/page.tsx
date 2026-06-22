@@ -1,9 +1,9 @@
 import { Suspense } from 'react';
 import clsx from 'clsx';
 import { setRequestLocale } from 'next-intl/server';
-import { PokemonResults } from '@/app/_components/PokemonResults/PokemonResults';
-import { Details } from '@/app/_components/Details/Details';
-import { ResultsSkeleton, DetailsSkeleton } from '@/app/_components/Skeleton/Skeleton';
+import { PokemonResults } from '@/components/PokemonResults/PokemonResults';
+import { Details } from '@/components/Details/Details';
+import { ResultsSkeleton, DetailsSkeleton } from '@/components/Skeleton/Skeleton';
 import styles from './page.module.scss';
 
 type HomePageProps = {

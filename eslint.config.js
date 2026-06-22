@@ -1,7 +1,6 @@
 import js from '@eslint/js';
 import globals from 'globals';
 import reactHooks from 'eslint-plugin-react-hooks';
-import reactRefresh from 'eslint-plugin-react-refresh';
 import next from '@next/eslint-plugin-next';
 import tseslint from 'typescript-eslint';
 import prettier from 'eslint-config-prettier';
@@ -15,7 +14,6 @@ export default defineConfig([
       js.configs.recommended,
       tseslint.configs.recommended,
       reactHooks.configs.flat.recommended,
-      reactRefresh.configs.vite,
       prettier,
     ],
     languageOptions: {
@@ -26,12 +24,16 @@ export default defineConfig([
     },
   },
   {
-    files: ['src/app/**/*.{ts,tsx}', 'src/middleware.ts'],
+    files: [
+      'src/app/**/*.{ts,tsx}',
+      'src/components/**/*.{ts,tsx}',
+      'src/providers/**/*.{ts,tsx}',
+      'src/middleware.ts',
+    ],
     plugins: { '@next/next': next },
     rules: {
       ...next.configs.recommended.rules,
       ...next.configs['core-web-vitals'].rules,
-      'react-refresh/only-export-components': 'off',
     },
   },
 ]);

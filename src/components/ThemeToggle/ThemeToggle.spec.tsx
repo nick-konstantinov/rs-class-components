@@ -1,44 +1,48 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { ThemeProvider } from '@/context/ThemeProvider';
-import ThemeToggle from './ThemeToggle';
+import { NextIntlClientProvider } from 'next-intl';
+import { ThemeProvider } from '@/providers/ThemeProvider';
+import type { Theme } from '@/lib/theme';
+import { ThemeToggle } from './ThemeToggle';
 
-const renderToggle = () => render(<ThemeToggle />, { wrapper: ThemeProvider });
+const messages = { theme: { darkMode: 'Dark mode' } };
+
+function renderToggle(initialTheme: Theme = 'light') {
+  return render(
+    <NextIntlClientProvider locale="en" messages={messages}>
+      <ThemeProvider initialTheme={initialTheme}>
+        <ThemeToggle />
+      </ThemeProvider>
+    </NextIntlClientProvider>,
+  );
+}
 
 describe('ThemeToggle', () => {
   beforeEach(() => {
-    localStorage.removeItem('theme');
-    document.documentElement.removeAttribute('data-theme');
+    document.cookie = 'theme=; path=/; max-age=0';
   });
 
-  it('renders a switch labeled "Dark mode", unchecked by default', () => {
-    renderToggle();
+  it('renders a switch labeled "Dark mode", unchecked for the light theme', () => {
+    renderToggle('light');
 
     const toggle = screen.getByRole('switch', { name: 'Dark mode' });
     expect(toggle).toBeInTheDocument();
     expect(toggle).not.toBeChecked();
   });
 
-  it('switches data-theme on html when toggled', async () => {
+  it('checks the switch and persists the cookie when toggled', async () => {
     const user = userEvent.setup();
-    renderToggle();
-
-    expect(document.documentElement.getAttribute('data-theme')).toBe('light');
+    renderToggle('light');
 
     await user.click(screen.getByRole('switch'));
 
-    expect(document.documentElement.getAttribute('data-theme')).toBe('dark');
+    expect(screen.getByRole('switch')).toBeChecked();
+    expect(document.cookie).toContain('theme=dark');
   });
 
-  it('reflects checked state matching current theme', async () => {
-    const user = userEvent.setup();
-    renderToggle();
+  it('reflects the initial dark theme as checked', () => {
+    renderToggle('dark');
 
-    const toggle = screen.getByRole('switch');
-    expect(toggle).not.toBeChecked();
-
-    await user.click(toggle);
-
-    expect(toggle).toBeChecked();
+    expect(screen.getByRole('switch')).toBeChecked();
   });
 });

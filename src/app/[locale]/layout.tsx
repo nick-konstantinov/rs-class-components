@@ -1,18 +1,33 @@
 import '@/app/globals.scss';
 import type { ReactNode } from 'react';
+import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { hasLocale, NextIntlClientProvider } from 'next-intl';
-import { setRequestLocale } from 'next-intl/server';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { routing } from '@/i18n/routing';
 import { readThemeCookie } from '@/lib/theme.server';
-import { StoreProvider } from '@/app/_providers/StoreProvider';
-import { ThemeProvider } from '@/app/_providers/ThemeProvider';
-import { Header } from '@/app/_components/Header/Header';
-import { Flyout } from '@/app/_components/Flyout/Flyout';
+import { StoreProvider } from '@/providers/StoreProvider';
+import { ThemeProvider } from '@/providers/ThemeProvider';
+import { Header } from '@/components/Header/Header';
+import { Flyout } from '@/components/Flyout/Flyout';
 import styles from './layout.module.scss';
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'app' });
+
+  return {
+    title: t('title'),
+    description: t('description'),
+  };
 }
 
 type LocaleLayoutProps = {

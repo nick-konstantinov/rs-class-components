@@ -1,58 +1,74 @@
-import { screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import Flyout from './Flyout';
-import { renderWithStore } from '@/test-utils/renderWithStore';
+import { Provider } from 'react-redux';
+import { NextIntlClientProvider } from 'next-intl';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+import { makeStore } from '@/store/store';
+import { toggleSelected } from '@/store/slices/selectedItemsSlice';
 import { makePokemon } from '@/test-utils/mockPokemon';
-import { selectItemsCount } from '@/store/slices/selectedItemsSlice';
-import { downloadCsv } from '@/utils/csv';
+import type { PokemonItem } from '@/types/pokemon';
+import { Flyout } from './Flyout';
 
-vi.mock('@/utils/csv', () => ({
-  downloadCsv: vi.fn(),
+vi.mock('@/app/[locale]/actions', () => ({
+  generateCsvAction: vi.fn(async () => ({ base64: 'Y3N2', filename: '2_pokemons.csv' })),
 }));
 
-const mockedDownloadCsv = vi.mocked(downloadCsv);
+const messages = {
+  flyout: {
+    label: 'Selection',
+    selected: '{count, plural, =1 {# item selected} other {# items selected}}',
+    unselectAll: 'Unselect all',
+    generate: 'Generate CSV',
+    generating: 'Generating…',
+    download: 'Save {filename}',
+  },
+};
+
+function renderFlyout(preselected: PokemonItem[] = []) {
+  const store = makeStore();
+  preselected.forEach((item) => store.dispatch(toggleSelected(item)));
+
+  return render(
+    <NextIntlClientProvider locale="en" messages={messages}>
+      <Provider store={store}>
+        <Flyout />
+      </Provider>
+    </NextIntlClientProvider>,
+  );
+}
+
+afterEach(() => {
+  vi.clearAllMocks();
+});
 
 describe('Flyout', () => {
-  beforeEach(() => {
-    mockedDownloadCsv.mockReset();
+  it('renders nothing when no items are selected', () => {
+    const { container } = renderFlyout([]);
+    expect(container).toBeEmptyDOMElement();
   });
 
-  it('does not render when nothing is selected', () => {
-    renderWithStore(<Flyout />);
-
-    expect(screen.queryByRole('region', { name: 'Selection' })).not.toBeInTheDocument();
+  it('shows the selected count', () => {
+    renderFlyout([makePokemon({ name: 'a' }), makePokemon({ name: 'b' })]);
+    expect(screen.getByText('2 items selected')).toBeInTheDocument();
   });
 
-  it('shows the selection count', () => {
-    renderWithStore(<Flyout />, {
-      preselected: [makePokemon({ name: 'a' }), makePokemon({ name: 'b' })],
-    });
-
-    const region = screen.getByRole('region', { name: 'Selection' });
-    expect(region).toBeInTheDocument();
-    expect(region).toHaveTextContent('2 items are selected');
-  });
-
-  it('clears the store when Unselect all is clicked', async () => {
+  it('clears the selection on "Unselect all"', async () => {
     const user = userEvent.setup();
-    const { store } = renderWithStore(<Flyout />, {
-      preselected: [makePokemon({ name: 'a' })],
-    });
+    const { container } = renderFlyout([makePokemon({ name: 'a' })]);
 
     await user.click(screen.getByRole('button', { name: 'Unselect all' }));
 
-    expect(selectItemsCount(store.getState())).toBe(0);
+    expect(container).toBeEmptyDOMElement();
   });
 
-  it('calls downloadCsv with the selected items when Download is clicked', async () => {
+  it('renders a CSV download link after generating', async () => {
     const user = userEvent.setup();
-    const a = makePokemon({ name: 'a' });
-    const b = makePokemon({ name: 'b' });
-    renderWithStore(<Flyout />, { preselected: [a, b] });
+    renderFlyout([makePokemon({ name: 'a' }), makePokemon({ name: 'b' })]);
 
-    await user.click(screen.getByRole('button', { name: 'Download' }));
+    await user.click(screen.getByRole('button', { name: 'Generate CSV' }));
 
-    expect(mockedDownloadCsv).toHaveBeenCalledTimes(1);
-    expect(mockedDownloadCsv).toHaveBeenCalledWith([a, b]);
+    const link = await screen.findByRole('link', { name: 'Save 2_pokemons.csv' });
+    expect(link).toHaveAttribute('download', '2_pokemons.csv');
+    expect(link).toHaveAttribute('href', 'data:text/csv;charset=utf-8;base64,Y3N2');
   });
 });

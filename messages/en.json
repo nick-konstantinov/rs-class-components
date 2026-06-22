@@ -1,6 +1,7 @@
 {
   "app": {
-    "title": "Pokemon Search"
+    "title": "Pokemon Search",
+    "description": "Server-rendered Pokemon search built with Next.js App Router."
   },
   "nav": {
     "label": "Main navigation",
