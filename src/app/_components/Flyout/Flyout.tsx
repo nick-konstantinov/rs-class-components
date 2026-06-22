@@ -21,7 +21,7 @@ export function Flyout() {
   }
 
   return (
-    <aside className={styles.flyout} role="region" aria-label={t('label')}>
+    <aside data-flyout className={styles.flyout} role="region" aria-label={t('label')}>
       <span className={styles.count}>{t('selected', { count })}</span>
 
       <button type="button" className={styles.button} onClick={() => dispatch(unselectAll())}>

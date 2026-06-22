@@ -57,6 +57,11 @@
     "message": "The page you're looking for doesn't exist.",
     "backHome": "Back home"
   },
+  "error": {
+    "title": "Something went wrong",
+    "message": "An unexpected error occurred while loading this page.",
+    "retry": "Try again"
+  },
   "about": {
     "title": "About",
     "intro": "Hi! I'm <name>Nick Konstantinov</name>, a student of the <course>Rolling Scopes School: React 2026Q2</course> course. This Pokemon search app is built as Task 3 of the React module.",

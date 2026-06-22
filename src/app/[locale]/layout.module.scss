@@ -13,3 +13,13 @@
 .main {
   flex: 1;
 }
+
+.column:has(~ [data-flyout]) {
+  padding-bottom: 3rem;
+}
+
+@media (max-width: 450px) {
+  .column:has(~ [data-flyout]) {
+    padding-bottom: 8rem;
+  }
+}
