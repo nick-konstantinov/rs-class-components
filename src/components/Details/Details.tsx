@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react';
 import styles from './Details.module.scss';
 import Loader from '@/components/Loader/Loader';
 import placeholderSprite from '@/assets/images/pokemon-placeholder.svg';
-import { fetchPokemonDetail } from '@/api/pokemon';
-import type { PokemonItem } from '@/types/pokemon';
+import { useGetPokemonDetailQuery } from '@/store/pokemonApi';
+import { getQueryErrorMessage } from '@/utils/errors';
 
 interface DetailsProps {
   name: string;
@@ -11,45 +10,16 @@ interface DetailsProps {
 }
 
 function Details({ name, onClose }: DetailsProps) {
-  const [data, setData] = useState<PokemonItem | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    const run = async () => {
-      try {
-        setError(null);
-        setData(null);
-        setLoading(true);
-
-        const result = await fetchPokemonDetail(name);
-        if (cancelled) return;
-
-        setData(result);
-      } catch (err) {
-        if (cancelled) return;
-        setError(err instanceof Error ? err.message : 'Unknown error');
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    };
-
-    void run();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [name]);
+  const { data, isFetching, error } = useGetPokemonDetailQuery(name);
+  const errorMessage = error ? getQueryErrorMessage(error) : null;
 
   return (
     <aside className={styles.details} aria-label="Pokemon details">
       <button type="button" className={styles.close} onClick={onClose} aria-label="Close details" />
 
-      {loading && <Loader />}
+      {isFetching && <Loader />}
 
-      {error && <p className={styles.error}>{error}</p>}
+      {errorMessage && <p className={styles.error}>{errorMessage}</p>}
 
       {data && (
         <div className={styles.content}>

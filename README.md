@@ -15,6 +15,6 @@ Copy the env template before running the project:
 cp .env.example .env
 ```
 
-`.env` is git-ignored — edit it locally if you need to point the app at a different API.
+`.env` is git-ignored — edit it locally if you need to point the app at a different API. See `.env.example` for the available variables.
 
 ## Tasks

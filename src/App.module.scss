@@ -3,3 +3,13 @@
   flex-direction: column;
   min-height: 100vh;
 }
+
+.app:has(.flyout) {
+  padding-bottom: 5rem;
+}
+
+@media (max-width: 450px) {
+  .app:has(.flyout) {
+    padding-bottom: 11rem;
+  }
+}

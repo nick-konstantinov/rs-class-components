@@ -1,3 +1,4 @@
+import { type MockInstance } from 'vitest';
 import type { PokemonDetailResponse, PokemonListResponse } from '@/types/pokemon';
 
 export function makeDetailResponse(
@@ -14,9 +15,9 @@ export function makeDetailResponse(
   };
 }
 
-export function makeListResponse(names: string[]): PokemonListResponse {
+export function makeListResponse(names: string[], count = names.length): PokemonListResponse {
   return {
-    count: names.length,
+    count,
     next: null,
     previous: null,
     results: names.map((name) => ({
@@ -35,4 +36,32 @@ export function makeFetchResponse<T>(data: T, status = 200): Response {
 
 export function makeErrorResponse(status: number): Response {
   return new Response(null, { status });
+}
+
+export function requestedUrls(fetchSpy: MockInstance<typeof fetch>): string[] {
+  return fetchSpy.mock.calls.map(([input]) => (input as Request).url);
+}
+
+export function mockPokemonFetch(
+  fetchSpy: MockInstance<typeof fetch>,
+  routes: Record<string, () => Response>,
+): void {
+  fetchSpy.mockImplementation((input) => {
+    const url = (input as Request).url;
+    const route = Object.entries(routes).find(([fragment]) => url.includes(fragment));
+    return Promise.resolve(route ? route[1]() : makeErrorResponse(404));
+  });
+}
+
+export function listPageRoutes(
+  names: string[],
+  { count = names.length, offset = 0 }: { count?: number; offset?: number } = {},
+): Record<string, () => Response> {
+  const routes: Record<string, () => Response> = {
+    [`offset=${offset}`]: () => makeFetchResponse(makeListResponse(names, count)),
+  };
+  for (const name of names) {
+    routes[`pokemon/${name}`] = () => makeFetchResponse(makeDetailResponse({ name }));
+  }
+  return routes;
 }

@@ -1,33 +1,32 @@
-import { render, screen } from '@testing-library/react';
+import { type MockInstance } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import Main from './Main';
 import DetailsOutletSlot from '@/components/Details/DetailsOutletSlot';
 import ErrorBoundary from '@/components/ErrorBoundary/ErrorBoundary';
-import { fetchPokemonDetail, getPokemonList, searchPokemon } from '@/api/pokemon';
-import { makePokemon, makePokemonList } from '@/test-utils/mockPokemon';
+import {
+  listPageRoutes,
+  makeDetailResponse,
+  makeErrorResponse,
+  makeFetchResponse,
+  mockPokemonFetch,
+  requestedUrls,
+} from '@/test-utils/mockApi';
 import { makeStore } from '@/test-utils/renderWithStore';
 import { ROUTES } from '@/routes';
 
-vi.mock('@/api/pokemon', () => ({
-  getPokemonList: vi.fn(),
-  searchPokemon: vi.fn(),
-  fetchPokemonDetail: vi.fn(),
-}));
-
-const mockedGetPokemonList = vi.mocked(getPokemonList);
-const mockedSearchPokemon = vi.mocked(searchPokemon);
-const mockedFetchPokemonDetail = vi.mocked(fetchPokemonDetail);
-
-const renderMain = (props: { searchTerm?: string; initialPath?: string } = {}) =>
-  render(<Main searchTerm={props.searchTerm ?? ''} />, {
+const renderMain = (props: { searchTerm?: string; initialPath?: string } = {}) => {
+  const store = makeStore();
+  return render(<Main searchTerm={props.searchTerm ?? ''} />, {
     wrapper: ({ children }) => (
-      <Provider store={makeStore()}>
+      <Provider store={store}>
         <MemoryRouter initialEntries={[props.initialPath ?? '/']}>{children}</MemoryRouter>
       </Provider>
     ),
   });
+};
 
 const renderMainWithRoutes = (props: { searchTerm?: string; initialPath?: string } = {}) =>
   render(
@@ -43,54 +42,55 @@ const renderMainWithRoutes = (props: { searchTerm?: string; initialPath?: string
   );
 
 describe('Main', () => {
+  let fetchSpy: MockInstance<typeof fetch>;
+
   beforeEach(() => {
-    mockedGetPokemonList.mockReset();
-    mockedSearchPokemon.mockReset();
-    mockedFetchPokemonDetail.mockReset();
+    fetchSpy = vi.spyOn(globalThis, 'fetch');
+  });
+
+  afterEach(() => {
+    fetchSpy.mockRestore();
   });
 
   it('shows loader on mount and renders the fetched pokemon list', async () => {
-    mockedGetPokemonList.mockResolvedValueOnce({
-      items: makePokemonList(3),
-      totalCount: 60,
-    });
+    mockPokemonFetch(fetchSpy, listPageRoutes(['pokemon-1', 'pokemon-2'], { count: 60 }));
 
     renderMain();
 
     expect(screen.getByRole('status', { name: 'Loading' })).toBeInTheDocument();
     expect(await screen.findByRole('heading', { name: 'pokemon-1' })).toBeInTheDocument();
-    expect(screen.getAllByRole('heading')).toHaveLength(3);
-    expect(mockedGetPokemonList).toHaveBeenCalledWith(1);
+    expect(screen.getAllByRole('heading')).toHaveLength(2);
+    expect(requestedUrls(fetchSpy)).toContainEqual(expect.stringContaining('offset=0'));
   });
 
   it('reads page from URL and fetches that page', async () => {
-    mockedGetPokemonList.mockResolvedValueOnce({
-      items: makePokemonList(3),
-      totalCount: 60,
-    });
+    mockPokemonFetch(
+      fetchSpy,
+      listPageRoutes(['pokemon-1', 'pokemon-2'], { count: 60, offset: 40 }),
+    );
 
     renderMain({ initialPath: '/?page=3' });
 
     await screen.findByRole('heading', { name: 'pokemon-1' });
 
-    expect(mockedGetPokemonList).toHaveBeenCalledWith(3);
+    expect(requestedUrls(fetchSpy)).toContainEqual(expect.stringContaining('offset=40'));
   });
 
   it('searches when searchTerm is provided on mount', async () => {
-    mockedSearchPokemon.mockResolvedValueOnce({
-      items: [makePokemon({ name: 'charizard' })],
-      totalCount: 1,
+    mockPokemonFetch(fetchSpy, {
+      'pokemon/charizard': () => makeFetchResponse(makeDetailResponse({ name: 'charizard' })),
     });
 
     renderMain({ searchTerm: 'charizard' });
 
     expect(await screen.findByRole('heading', { name: 'charizard' })).toBeInTheDocument();
-    expect(mockedSearchPokemon).toHaveBeenCalledWith('charizard');
-    expect(mockedGetPokemonList).not.toHaveBeenCalled();
+    const urls = requestedUrls(fetchSpy);
+    expect(urls).toContainEqual(expect.stringContaining('/pokemon/charizard'));
+    expect(urls).not.toContainEqual(expect.stringContaining('limit='));
   });
 
   it('shows "No Pokemon available" when list is empty without search term', async () => {
-    mockedGetPokemonList.mockResolvedValueOnce({ items: [], totalCount: 0 });
+    mockPokemonFetch(fetchSpy, listPageRoutes([], { count: 0 }));
 
     renderMain();
 
@@ -98,7 +98,7 @@ describe('Main', () => {
   });
 
   it('shows "No Pokemon found" when search yields no results', async () => {
-    mockedSearchPokemon.mockResolvedValueOnce({ items: [], totalCount: 0 });
+    mockPokemonFetch(fetchSpy, {});
 
     renderMain({ searchTerm: 'missingno' });
 
@@ -106,18 +106,19 @@ describe('Main', () => {
   });
 
   it('shows the API error message', async () => {
-    mockedGetPokemonList.mockRejectedValueOnce(new Error('Server is unavailable'));
+    mockPokemonFetch(fetchSpy, {
+      'offset=0': () => makeErrorResponse(500),
+    });
 
     renderMain();
 
-    expect(await screen.findByText('Server is unavailable')).toBeInTheDocument();
+    expect(
+      await screen.findByText('Server is unavailable, please try again later'),
+    ).toBeInTheDocument();
   });
 
   it('renders Pagination once items are loaded', async () => {
-    mockedGetPokemonList.mockResolvedValueOnce({
-      items: makePokemonList(3),
-      totalCount: 60,
-    });
+    mockPokemonFetch(fetchSpy, listPageRoutes(['pokemon-1', 'pokemon-2'], { count: 60 }));
 
     renderMain();
 
@@ -128,12 +129,10 @@ describe('Main', () => {
 
   it('refetches and reflects the URL when a page button is clicked', async () => {
     const user = userEvent.setup();
-    mockedGetPokemonList
-      .mockResolvedValueOnce({ items: makePokemonList(3), totalCount: 60 })
-      .mockResolvedValueOnce({
-        items: [makePokemon({ name: 'page2-1' })],
-        totalCount: 60,
-      });
+    mockPokemonFetch(fetchSpy, {
+      ...listPageRoutes(['pokemon-1', 'pokemon-2'], { count: 60 }),
+      ...listPageRoutes(['page2-1'], { count: 60, offset: 20 }),
+    });
 
     renderMain();
 
@@ -141,17 +140,13 @@ describe('Main', () => {
     await user.click(screen.getByRole('button', { name: '2' }));
 
     expect(await screen.findByRole('heading', { name: 'page2-1' })).toBeInTheDocument();
-    expect(mockedGetPokemonList).toHaveBeenNthCalledWith(2, 2);
+    expect(requestedUrls(fetchSpy)).toContainEqual(expect.stringContaining('offset=20'));
   });
 
   it('refetches when searchTerm prop changes', async () => {
-    mockedGetPokemonList.mockResolvedValueOnce({
-      items: makePokemonList(2),
-      totalCount: 40,
-    });
-    mockedSearchPokemon.mockResolvedValueOnce({
-      items: [makePokemon({ name: 'mewtwo' })],
-      totalCount: 1,
+    mockPokemonFetch(fetchSpy, {
+      ...listPageRoutes(['pokemon-1', 'pokemon-2'], { count: 40 }),
+      'pokemon/mewtwo': () => makeFetchResponse(makeDetailResponse({ name: 'mewtwo' })),
     });
 
     const { rerender } = renderMain();
@@ -162,16 +157,12 @@ describe('Main', () => {
 
     expect(await screen.findByRole('heading', { name: 'mewtwo' })).toBeInTheDocument();
     expect(screen.queryByRole('heading', { name: 'pokemon-1' })).not.toBeInTheDocument();
-    expect(mockedSearchPokemon).toHaveBeenCalledWith('mewtwo');
+    expect(requestedUrls(fetchSpy)).toContainEqual(expect.stringContaining('/pokemon/mewtwo'));
   });
 
   it('opens the details panel when a card is clicked', async () => {
     const user = userEvent.setup();
-    mockedGetPokemonList.mockResolvedValueOnce({
-      items: makePokemonList(2),
-      totalCount: 40,
-    });
-    mockedFetchPokemonDetail.mockResolvedValueOnce(makePokemon({ name: 'pokemon-1' }));
+    mockPokemonFetch(fetchSpy, listPageRoutes(['pokemon-1', 'pokemon-2'], { count: 40 }));
 
     renderMainWithRoutes();
 
@@ -179,16 +170,12 @@ describe('Main', () => {
     await user.click(screen.getByRole('button', { name: /pokemon-1/i }));
 
     expect(await screen.findByRole('heading', { level: 2, name: 'pokemon-1' })).toBeInTheDocument();
-    expect(mockedFetchPokemonDetail).toHaveBeenCalledWith('pokemon-1');
+    expect(requestedUrls(fetchSpy)).toContainEqual(expect.stringContaining('/pokemon/pokemon-1'));
   });
 
   it('closes the details panel when the main background is clicked', async () => {
     const user = userEvent.setup();
-    mockedGetPokemonList.mockResolvedValueOnce({
-      items: makePokemonList(2),
-      totalCount: 40,
-    });
-    mockedFetchPokemonDetail.mockResolvedValueOnce(makePokemon({ name: 'pokemon-1' }));
+    mockPokemonFetch(fetchSpy, listPageRoutes(['pokemon-1', 'pokemon-2'], { count: 40 }));
 
     renderMainWithRoutes({ initialPath: '/?page=1&details=pokemon-1' });
 
@@ -201,11 +188,7 @@ describe('Main', () => {
 
   it('closes the details panel when the close button is clicked', async () => {
     const user = userEvent.setup();
-    mockedGetPokemonList.mockResolvedValueOnce({
-      items: makePokemonList(2),
-      totalCount: 40,
-    });
-    mockedFetchPokemonDetail.mockResolvedValueOnce(makePokemon({ name: 'pokemon-1' }));
+    mockPokemonFetch(fetchSpy, listPageRoutes(['pokemon-1', 'pokemon-2'], { count: 40 }));
 
     renderMainWithRoutes({ initialPath: '/?page=1&details=pokemon-1' });
 
@@ -219,10 +202,7 @@ describe('Main', () => {
   it('triggers an error caught by ErrorBoundary when "Throw test error" is clicked', async () => {
     const user = userEvent.setup();
     const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    mockedGetPokemonList.mockResolvedValueOnce({
-      items: makePokemonList(1),
-      totalCount: 20,
-    });
+    mockPokemonFetch(fetchSpy, listPageRoutes(['pokemon-1'], { count: 20 }));
 
     render(
       <Provider store={makeStore()}>
@@ -239,5 +219,44 @@ describe('Main', () => {
 
     expect(screen.getByRole('heading', { name: 'Something went wrong' })).toBeInTheDocument();
     errorSpy.mockRestore();
+  });
+
+  it('refetches the current page when Refresh is clicked', async () => {
+    const user = userEvent.setup();
+    mockPokemonFetch(fetchSpy, listPageRoutes(['pokemon-1', 'pokemon-2'], { count: 60 }));
+
+    renderMain();
+
+    await screen.findByRole('heading', { name: 'pokemon-1' });
+    const callsBefore = fetchSpy.mock.calls.length;
+
+    await user.click(screen.getByRole('button', { name: 'Refresh' }));
+
+    await waitFor(() => {
+      expect(fetchSpy.mock.calls.length).toBeGreaterThan(callsBefore);
+    });
+  });
+
+  it('serves a revisited page from cache without refetching', async () => {
+    const user = userEvent.setup();
+    mockPokemonFetch(fetchSpy, {
+      ...listPageRoutes(['pokemon-1', 'pokemon-2'], { count: 60 }),
+      ...listPageRoutes(['page2-1'], { count: 60, offset: 20 }),
+    });
+
+    renderMain();
+
+    await screen.findByRole('heading', { name: 'pokemon-1' });
+    const callsAfterPage1 = fetchSpy.mock.calls.length;
+
+    await user.click(screen.getByRole('button', { name: '2' }));
+    await screen.findByRole('heading', { name: 'page2-1' });
+    const callsAfterPage2 = fetchSpy.mock.calls.length;
+    expect(callsAfterPage2).toBeGreaterThan(callsAfterPage1);
+
+    await user.click(screen.getByRole('button', { name: '1' }));
+    await screen.findByRole('heading', { name: 'pokemon-1' });
+
+    expect(fetchSpy.mock.calls.length).toBe(callsAfterPage2);
   });
 });

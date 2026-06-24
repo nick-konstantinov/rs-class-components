@@ -6,8 +6,9 @@ import styles from './Main.module.scss';
 import Loader from '@/components/Loader/Loader';
 import CardList from '@/components/CardList/CardList';
 import Pagination from '@/components/Pagination/Pagination';
-import { getPokemonList, searchPokemon } from '@/api/pokemon';
-import type { PokemonItem } from '@/types/pokemon';
+import { pokemonApi, useGetPokemonsQuery } from '@/store/pokemonApi';
+import { useAppDispatch } from '@/store/hooks';
+import { getQueryErrorMessage } from '@/utils/errors';
 import { RESULTS_PER_PAGE } from '@/constants';
 
 interface MainProps {
@@ -15,11 +16,8 @@ interface MainProps {
 }
 
 function Main({ searchTerm }: MainProps) {
-  const [items, setItems] = useState<PokemonItem[]>([]);
-  const [totalCount, setTotalCount] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [crash, setCrash] = useState(false);
+  const dispatch = useAppDispatch();
 
   const [searchParams, setSearchParams] = useSearchParams();
   const pageParam = searchParams.get('page');
@@ -44,41 +42,17 @@ function Main({ searchTerm }: MainProps) {
 
   const selectedName = searchParams.get('details');
 
-  useEffect(() => {
-    let cancelled = false;
-
-    const run = async () => {
-      try {
-        setError(null);
-        setLoading(true);
-
-        const result = trimmed ? await searchPokemon(trimmed) : await getPokemonList(page);
-
-        if (cancelled) return;
-
-        setItems(result.items);
-        setTotalCount(result.totalCount);
-      } catch (err) {
-        if (cancelled) return;
-        setError(err instanceof Error ? err.message : 'Unknown error');
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    };
-
-    void run();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [trimmed, page]);
+  const { data, isFetching, error } = useGetPokemonsQuery({ search: trimmed, page });
+  const items = data?.items ?? [];
+  const totalCount = data?.totalCount ?? 0;
+  const errorMessage = error ? getQueryErrorMessage(error) : null;
 
   if (crash) {
     throw new Error('Test error');
   }
 
   const totalPages = Math.ceil(totalCount / RESULTS_PER_PAGE);
-  const isEmpty = !loading && items.length === 0;
+  const isEmpty = !isFetching && items.length === 0;
 
   const handlePageChange = (next: number) => {
     setSearchParams({ page: String(next) });
@@ -97,22 +71,26 @@ function Main({ searchTerm }: MainProps) {
     setSearchParams(next, { replace: true });
   };
 
+  const handleRefresh = () => {
+    dispatch(pokemonApi.util.invalidateTags(['Pokemon']));
+  };
+
   const className = clsx(styles.main, { [styles.split]: selectedName });
 
   return (
     <main className={className} onClick={handleBackgroundClick}>
       <div className={styles.list}>
-        {error && <p className={styles.error}>{error}</p>}
+        {errorMessage && <p className={styles.error}>{errorMessage}</p>}
 
-        {loading && <Loader />}
+        {isFetching && <Loader />}
 
-        {!loading && !error && isEmpty && (
+        {!isFetching && !errorMessage && isEmpty && (
           <p className={styles.placeholder}>
             {trimmed ? 'No Pokemon found' : 'No Pokemon available'}
           </p>
         )}
 
-        {!loading && items.length > 0 && (
+        {!isFetching && items.length > 0 && (
           <>
             <CardList items={items} onSelectCard={handleSelectCard} selectedName={selectedName} />
             <Pagination
@@ -124,10 +102,15 @@ function Main({ searchTerm }: MainProps) {
         )}
 
         <div className={styles.controls}>
-          {!loading && (
-            <button onClick={() => setCrash(true)} className={styles.errorBtn}>
-              Throw test error
-            </button>
+          {!isFetching && (
+            <>
+              <button onClick={handleRefresh} className={styles.refresh}>
+                Refresh
+              </button>
+              <button onClick={() => setCrash(true)} className={styles.errorBtn}>
+                Throw test error
+              </button>
+            </>
           )}
         </div>
       </div>
